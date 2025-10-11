@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blog — Aravind Thoomu</title>
+  <style>
+    :root{
+      --accent: #3a7d44;
+      --bg: #ffffff;
+      --text: #111111;
+      --muted: #666666;
+      --card-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      --max-width: 1100px;
+    }
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+    body{background:var(--bg);color:var(--text);line-height:1.5; -webkit-font-smoothing:antialiased; padding:36px 18px;}
+    .wrap{max-width:var(--max-width);margin:0 auto;}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+    header h1{font-size:20px;margin:0;}
+    header p{margin:0;color:var(--muted);font-size:14px;}
+    .grid{display:flex;flex-direction:column;gap:18px;}
+    /* horizontal card style */
+    .card{display:flex;gap:18px;align-items:flex-start;background:#fff;border-radius:10px;padding:14px;box-shadow:var(--card-shadow);border:1px solid #f0f0f0;}
+    .thumb{flex:0 0 220px;height:120px;overflow:hidden;border-radius:8px;background:#efefef;display:flex;align-items:center;justify-content:center;}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+    .meta{flex:1;min-width:0;}
+    .title{font-size:18px;color:var(--text);margin:0 0 6px 0;}
+    .excerpt{color:#222; margin:0 0 10px 0; display:block; max-height:72px; overflow:hidden; text-overflow:ellipsis;}
+    .meta-row{display:flex;align-items:center;gap:12px;justify-content:space-between;}
+    .date{color:var(--muted);font-size:13px;}
+    .read-more{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;}
+    .read-more:hover{opacity:0.95;}
+    /* responsive */
+    @media (min-width:720px){
+      .grid{gap:20px;}
+      .card{padding:16px;}
+      .thumb{flex-basis:280px;height:150px;}
+    }
+    @media (min-width:980px){
+      .grid{display:grid;grid-template-columns:1fr;gap:18px;}
+    }
+    .loader{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:15px;}
+    .note{color:var(--muted);font-size:13px;margin-top:10px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Blogs By — Aravind Thoomu</h1>
+        <p>Latest posts from <strong>aravindthoomu.medium.com</strong></p>
+      </div>
+      <div><a href="/" style="color:var(--accent);text-decoration:none;font-weight:600">← Back to site</a></div>
+    </header>
+
+    <div id="feedArea">
+      <div class="loader">Loading posts…</div>
+    </div>
+
+    <p class="note">This page fetches your Medium RSS feed and shows all available posts. Click "Read Full Blog" to open the full article on Medium.</p>
+  </div>
+
+<script>
+/*
+  How this works:
+  - This static page fetches your Medium feed and renders each post as a horizontal card.
+  - It uses a CORS proxy (api.allorigins.win) to avoid cross-origin blocks.
+  - If you prefer, you can replace the proxy URL or host the feed server-side.
+  - No API keys needed.
+*/
+
+/* CONFIG */
+const feedUrl = 'https://aravindthoomu.medium.com/feed';
+const corsProxy = 'https://api.codetabs.com/v1/proxy?quest='; // alternative, stable, and CORS-safe
+/* END CONFIG */
+
+function createCard(post){
+  const card = document.createElement('article');
+  card.className = 'card';
+
+  const thumb = document.createElement('div');
+  thumb.className = 'thumb';
+
+  const img = document.createElement('img');
+  img.alt = post.title || 'cover';
+  if(post.thumbnail) img.src = post.thumbnail;
+  else img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400"><rect width="100%" height="100%" fill="#efefef"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#aaa" font-family="Arial" font-size="20">No image</text></svg>');
+  thumb.appendChild(img);
+
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+
+  const title = document.createElement('h2');
+  title.className = 'title';
+  title.innerText = post.title || 'Untitled';
+
+  const excerpt = document.createElement('p');
+  excerpt.className = 'excerpt';
+  excerpt.innerHTML = post.excerpt || '';
+
+  const row = document.createElement('div');
+  row.className = 'meta-row';
+
+  const date = document.createElement('div');
+  date.className = 'date';
+  date.innerText = post.pubDate || '';
+
+  const btn = document.createElement('a');
+  btn.className = 'read-more';
+  btn.href = post.link || '#';
+  btn.target = '_blank';
+  btn.rel = 'noopener noreferrer';
+  btn.innerText = 'Read Full Blog';
+
+  row.appendChild(date);
+  row.appendChild(btn);
+
+  meta.appendChild(title);
+  meta.appendChild(excerpt);
+  meta.appendChild(row);
+
+  card.appendChild(thumb);
+  card.appendChild(meta);
+
+  return card;
+}
+
+function parseFeed(xmlText){
+  // Parse XML and extract items/entries
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, 'application/xml');
+
+  // check for parsererror
+  if(doc.querySelector('parsererror')) {
+    throw new Error('Failed to parse feed XML');
+  }
+
+  // Support both RSS (<item>) and Atom (<entry>)
+  const items = Array.from(doc.querySelectorAll('item, entry'));
+  const posts = items.map(item => {
+    // title
+    const titleEl = item.querySelector('title');
+    const title = titleEl ? (titleEl.textContent || '').trim() : '';
+
+    // link - try multiple patterns
+    let link = '';
+    const linkEl = item.querySelector('link[rel="alternate"], link');
+    if(linkEl){
+      link = linkEl.getAttribute('href') || linkEl.textContent || '';
+    }
+    if(!link){
+      // try guid
+      const guid = item.querySelector('guid');
+      if(guid) link = guid.textContent || '';
+    }
+
+    // pubDate
+    const pubDateEl = item.querySelector('pubDate, updated, published');
+    const pubDate = pubDateEl ? (pubDateEl.textContent || '').trim() : '';
+
+    // content (try content:encoded or description or content)
+    let content = '';
+    const cenc = item.querySelector('encoded');
+    if(cenc && cenc.textContent) content = cenc.textContent;
+    else {
+      const desc = item.querySelector('description');
+      if(desc && desc.textContent) content = desc.textContent;
+      else {
+        const cont = item.querySelector('content, ' + 'content\\:encoded');
+        if(cont && cont.textContent) content = cont.textContent;
+      }
+    }
+
+    // excerpt: first paragraph text
+    let excerpt = '';
+    try {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = content || '';
+      // Remove reading meter overlays if present
+      const paras = Array.from(tmp.querySelectorAll('p')).filter(p => p.textContent.trim().length>0);
+      if(paras.length>0) excerpt = paras.map(p => p.textContent.trim()).slice(0,2).join(' ');
+      else excerpt = (tmp.textContent || '').trim().slice(0,250) + '...';
+    } catch(e){
+      excerpt = '';
+    }
+
+    // thumbnail: try media:thumbnail, then first img in content
+    let thumbnail = '';
+    const mediaThumb = item.querySelector('media\\:thumbnail, thumbnail');
+    if(mediaThumb && mediaThumb.getAttribute){
+      thumbnail = mediaThumb.getAttribute('url') || mediaThumb.textContent || '';
+    }
+    if(!thumbnail){
+      // extract first image from content HTML
+      const tmp2 = document.createElement('div');
+      tmp2.innerHTML = content || '';
+      const img = tmp2.querySelector('img');
+      if(img) thumbnail = img.getAttribute('src') || '';
+    }
+
+    return { title, link, pubDate, excerpt, thumbnail };
+  });
+
+  return posts;
+}
+
+async function fetchAndRender(){
+  const feedArea = document.getElementById('feedArea');
+  feedArea.innerHTML = '<div class="loader">Loading posts…</div>';
+  try {
+    const res = await fetch(corsProxy + encodeURIComponent(feedUrl));
+    if(!res.ok) throw new Error('Network response not ok: ' + res.status);
+    const data = await res.json();
+    const text = data.items ? data.items.map(item => `
+      <item>
+        <title>${item.title}</title>
+        <link>${item.link}</link>
+        <pubDate>${item.pubDate}</pubDate>
+        <description>${item.description}</description>
+      </item>`).join('') : '';
+    const posts = parseFeed(`<rss><channel>${text}</channel></rss>`);
+
+    if(!posts || posts.length===0){
+      feedArea.innerHTML = '<div class="note">No posts found in the feed.</div>';
+      return;
+    }
+
+    // Build grid (vertical stack of horizontal cards)
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    // Show all posts from feed
+    posts.forEach(p => {
+      const card = createCard(p);
+      grid.appendChild(card);
+    });
+
+    feedArea.innerHTML = '';
+    feedArea.appendChild(grid);
+
+  } catch(err){
+    console.error(err);
+    feedArea.innerHTML = '<div class="note">Failed to load feed. If you see CORS errors, consider replacing the CORS proxy or hosting the feed server-side. Error: '+ (err.message || err) + '</div>';
+  }
+}
+
+fetchAndRender();
+</script>
+
+</body>
+</html>
