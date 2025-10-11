@@ -202,4 +202,17 @@
           content.appendChild(audioEl);
         }
 
-        card
+        card.appendChild(imgEl);
+        card.appendChild(content);
+        container.appendChild(card);
+      });
+    })
+    .catch(err => {
+      const container = document.getElementById("episodes");
+      container.innerHTML = `<p style="color:#ff6666; text-align:center; margin-top:50px;">Unable to load podcast episodes. Please try again later.</p>`;
+      console.error("RSS fetch or parse error", err);
+    });
+</script>
+
+</body>
+</html>
