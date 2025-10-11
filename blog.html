@@ -1,88 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My Blog</title>
+    <meta charset="UTF-8" />
+    <title>The Insight Journal by Aravind Thoomu</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .blog-post { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
-        .blog-post h3 { margin: 0 0 5px 0; }
-        .blog-post a, .read-btn { text-decoration: none; color: #007BFF; }
-        .read-btn { display:inline-block; margin-top:10px; padding:6px 13px; background:#eee; border-radius:5px; border:1px solid #ddd; color:#007BFF; font-size:0.95em; font-weight:600;}
-        .blog-thumb { max-width:180px; max-height:180px; border-radius:6px; margin-bottom:10px; }
-        .blog-post em { color: #555; font-size: 0.9em; }
-        .blog-description { margin-top: 5px; margin-bottom: 10px; color: #333; }
-    </style>
-</head>
-<body>
-    <h1>My Blog</h1>
-    <div id="blog-container">Loading blog posts...</div>
-    <script>
-        function stripHtml(html) {
-            const tmp = document.createElement("div");
-            tmp.innerHTML = html;
-            return tmp.textContent || tmp.innerText || "";
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f9f4;
+            color: #2e3d29;
+            line-height: 1.6;
         }
-
-        fetch('Fetch.xml')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.text();
-            })
-            .then(str => {
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(str, "application/xml");
-                const items = xml.querySelectorAll("item");
-                const container = document.getElementById("blog-container");
-                if (items.length === 0) {
-                    container.innerHTML = "<p>No blog posts found.</p>";
-                    return;
-                }
-                container.innerHTML = "";
-                items.forEach((item, index) => {
-                    if(index === 5) return; // show only latest 5 posts
-
-                    const title = item.querySelector("title") ? item.querySelector("title").textContent : "No Title";
-                    const link = item.querySelector("link") ? item.querySelector("link").textContent : "#";
-                    const pubDate = item.querySelector("pubDate") ? item.querySelector("pubDate").textContent : "";
-                    let descriptionText = "";
-                    
-                    // Extract content encoded HTML
-                    const contentNode = item.getElementsByTagName("content:encoded")[0];
-                    if(contentNode) {
-                        const contentHTML = contentNode.textContent;
-                        // get clean text snippet (limit to about 200 chars)
-                        let plainText = stripHtml(contentHTML);
-                        descriptionText = plainText.length > 200 ? plainText.substring(0, 197) + "..." : plainText;
-                    }
-
-                    // Extract image from content:encoded HTML
-                    let imgHtml = '';
-                    if(contentNode) {
-                        const contentHTML = contentNode.textContent;
-                        const imgMatch = contentHTML.match(/<img[^>]+src="([^">]+)"/i);
-                        if(imgMatch && imgMatch[1]) {
-                            imgHtml = `<img src="${imgMatch[1]}" class="blog-thumb" alt="Blog thumbnail">`;
-                        }
-                    }
-
-                    const buttonHtml = `<a href="${link}" class="read-btn" target="_blank">Read on Medium</a>`;
-
-                    const postHTML =
-                        `<div class="blog-post">
-                            ${imgHtml}
-                            <h3><a href="${link}" target="_blank">${title}</a></h3>
-                            <p><em>${pubDate}</em></p>
-                            <p class="blog-description">${descriptionText}</p>
-                            ${buttonHtml}
-                        </div>`;
-
-                    container.innerHTML += postHTML;
-                });
-            })
-            .catch(error => {
-                document.getElementById("blog-container").innerHTML = "<p>Failed to load blog posts.</p>";
-            });
-    </script>
-</body>
-</html>
+        h1 {
+            color: #3a5a40;
+            font-weight: 700;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 1.1px;
+            text-shadow: 2px 2px 4px rgba(83, 117, 70, 0.5);
+        }
+        #blog-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .blog-post {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(66, 135, 65, 0.15);
+            margin-bottom: 25px;
+            padding: 25px;
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        .blog-post:hover {
+            box-shadow: 0 10px 25px rgba(80, 155, 70, 0.3);
+            transform: translateY(-5px);
+        }
+        .blog-post:active {
+            transform: translateY(-2px) scale(0.98);
+            box-shadow: 0 8px 20px rgba(70, 145, 65, 0.25);
+        }
+        .blog-post h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.6em;
+            color: #2e4d23;
+            transition: color 0.3s ease;
+        }
+        .blog-post h3 a {
+            text-decoration: none;
+            color: #568d48;
+            transition: color 0.3s ease;
+        }
+        .blog-post h3 a:hover {
+            color: #3a652a;
+            text-decoration: underline;
+        }
+        .blog-post em {
+            color: #5f7d55;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .blog-thumb {
+            float: right;
+            max-width: 180px;
+            max-height: 140px;
+            border-radius
