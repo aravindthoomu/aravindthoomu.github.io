@@ -48,7 +48,7 @@
   <div class="wrap">
     <header>
       <div>
-        <h1>Blogs By — Aravind Thoomu</h1>
+        <h1>Medium Articles — Aravind Thoomu</h1>
         <p>Latest posts from <strong>aravindthoomu.medium.com</strong></p>
       </div>
       <div><a href="/" style="color:var(--accent);text-decoration:none;font-weight:600">← Back to site</a></div>
@@ -72,7 +72,7 @@
 
 /* CONFIG */
 const feedUrl = 'https://aravindthoomu.medium.com/feed';
-const corsProxy = 'https://thingproxy.freeboard.io/fetch/'; // alternative, stable, and CORS-safe
+const corsProxy = 'https://api.allorigins.win/raw?url='; // reliable public proxy
 /* END CONFIG */
 
 function createCard(post){
@@ -211,15 +211,8 @@ async function fetchAndRender(){
   try {
     const res = await fetch(corsProxy + encodeURIComponent(feedUrl));
     if(!res.ok) throw new Error('Network response not ok: ' + res.status);
-    const data = await res.json();
-    const text = data.items ? data.items.map(item => `
-      <item>
-        <title>${item.title}</title>
-        <link>${item.link}</link>
-        <pubDate>${item.pubDate}</pubDate>
-        <description>${item.description}</description>
-      </item>`).join('') : '';
-    const posts = parseFeed(`<rss><channel>${text}</channel></rss>`);
+    const text = await res.text();
+    const posts = parseFeed(text);
 
     if(!posts || posts.length===0){
       feedArea.innerHTML = '<div class="note">No posts found in the feed.</div>';
