@@ -43,7 +43,7 @@
 const feedUrl = 'https://raw.githubusercontent.com/aravindthoomu/aravindthoomu.github.io/main/Fetch.xml';
 
 // Fetch the XML file
-fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(feedUrl)}`)
+fetch(`/proxy.php?url=${encodeURIComponent(feedUrl)}`)
   .then(response => response.text())
   .then(str => {
     const parser = new DOMParser();
