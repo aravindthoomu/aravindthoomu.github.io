@@ -1,180 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Podcast — Aravind Speaks</title>
-  <style>
-    body {
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Podcast - Aravind Thoomu</title>
+<style>
+  body {
       margin: 0;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      background-color: #121212;
-      color: #FFFFFF;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f5;
+      color: #2e3d29;
       line-height: 1.6;
-    }
-    header {
+  }
+  header {
       text-align: center;
       padding: 40px 20px;
-    }
-    header h1 {
+      background-color: white;
+      box-shadow: 0 4px 15px rgba(80, 145, 60, 0.15);
+  }
+  header h1 {
       font-size: 2.5rem;
-      color: #1DB954;
-      margin-bottom: 10px;
-    }
-    header p {
-      color: #ccc;
-    }
-    .container {
+      color: #3a5a40;
+      letter-spacing: 1.2px;
+      margin: 0 0 10px 0;
+      text-shadow: 1px 1px 3px rgba(90, 120, 70, 0.3);
+  }
+  header p {
+      color: #577a4a;
+      font-weight: 500;
+      font-size: 1.1rem;
+  }
+  main.container {
       max-width: 1100px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .grid {
+      margin: 20px auto;
+      padding: 0 20px 40px 20px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
       gap: 20px;
-    }
-    .episode-card {
-      background-color: #1e1e1e;
-      border-radius: 8px;
+  }
+  .episode-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(70, 140, 60, 0.12);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s ease;
-    }
-    .episode-card:hover {
-      transform: translateY(-5px);
-    }
-    .episode-image {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: default;
+  }
+  .episode-card:hover {
+      box-shadow: 0 10px 25px rgba(80, 160, 70, 0.3);
+      transform: translateY(-6px);
+  }
+  .episode-image {
       width: 100%;
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1/1;
       object-fit: cover;
-      background-color: #333;
-    }
-    .episode-content {
+      background-color: #dde6d0;
+  }
+  .episode-content {
       flex: 1;
-      padding: 15px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-    }
-    .episode-content h3 {
+      color: #3a533a;
+  }
+  .episode-content h3 {
       margin: 0 0 10px 0;
-      font-size: 1.1rem;
-      color: #f1f1f1;
-    }
-    .episode-content .date {
+      font-size: 1.25rem;
+      color: #2d4630;
+      user-select: text;
+  }
+  .episode-content .date {
       font-size: 0.9rem;
-      color: #bbb;
+      color: #6b7a55;
       margin-bottom: 10px;
-    }
-    .episode-content .desc {
+      font-weight: 600;
+  }
+  .episode-content .desc {
       flex: 1;
-      font-size: 0.95rem;
-      color: #ddd;
-      margin-bottom: 10px;
-    }
-    .episode-content audio {
+      font-size: 1rem;
+      color: #576845;
+      margin-bottom: 15px;
+      user-select: text;
+  }
+  .episode-content audio {
       width: 100%;
-      margin-top: auto;
-    }
-    .error {
-      color: #ff6666;
-      text-align: center;
-      margin-top: 50px;
-    }
-    @media (max-width: 600px) {
+      outline-offset: 3px;
+      outline-color: #7ebd59;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(126, 189, 89, 0.3);
+      cursor: pointer;
+  }
+  @media (max-width: 600px) {
       header h1 {
-        font-size: 1.8rem;
+          font-size: 1.9rem;
       }
-    }
-  </style>
+      main.container {
+          grid-template-columns: 1fr;
+          padding: 0 10px 30px 10px;
+      }
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>🎧 Aravind Speaks Podcast</h1>
-    <p>Listen to the latest episodes below</p>
-  </header>
 
-  <main class="container">
-    <div id="episodes" class="grid"></div>
-    <div id="err" class="error" style="display: none;">Unable to load podcast episodes. Please try again later.</div>
-  </main>
+<header>
+  <h1>Aravind Thoomu Podcast</h1>
+  <p>Listen to the latest episodes below</p>
+</header>
 
-  <script>
-    const rssURL = "https://anchor.fm/s/4a4bdd28/podcast/rss";
+<main class="container" id="episodes">
+  <!-- Episodes will be injected here -->
+</main>
 
-    // Using codetabs proxy to handle CORS reliably
-    const proxyURL = "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(rssURL);
+<script>
+  const rssURL = "https://anchor.fm/s/4a4bdd28/podcast/rss";
+  const proxyURL = "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(rssURL);
 
-    function formatDate(str) {
-      const d = new Date(str);
-      return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-    }
+  // Function to format date nicely
+  const formatDate = (str) => {
+    const d = new Date(str);
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  };
 
-    fetch(proxyURL)
-      .then(res => res.text())
-      .then(str => {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(str, "application/xml");
-        const items = xml.querySelectorAll("item");
-        if (!items || items.length === 0) throw new Error("No episodes found");
+  fetch(proxyURL)
+    .then(res => res.text())
+    .then(str => {
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(str, "application/xml");
+      const items = xml.querySelectorAll("item");
+      const container = document.getElementById("episodes");
 
-        const container = document.getElementById("episodes");
-        items.forEach(item => {
-          const title = item.querySelector("title")?.textContent || "Untitled Episode";
-          const pubDate = item.querySelector("pubDate")?.textContent || "";
-          const desc = item.querySelector("description")?.textContent || "";
-          const enclosure = item.querySelector("enclosure");
-          const audioUrl = enclosure ? enclosure.getAttribute("url") : "";
+      if (!items || items.length === 0) throw new Error("No episodes found");
 
-          // Try multiple sources for image
-          let imgUrl = "";
-          const itunesImage = item.getElementsByTagName("itunes:image")[0];
-          const imageTag = xml.querySelector("image > url");
+      // To handle single playback
+      let currentAudio = null;
 
-          if (itunesImage && itunesImage.getAttribute("href")) {
-            imgUrl = itunesImage.getAttribute("href");
-          } else if (imageTag) {
-            imgUrl = imageTag.textContent;
-          } else {
-            // Sometimes image is embedded in description HTML
-            const match = desc.match(/<img[^>]+src=["']([^"']+)["']/i);
-            if (match) imgUrl = match[1];
-          }
+      items.forEach((item, index) => {
+        const title = item.querySelector("title")?.textContent || "Untitled Episode";
+        const pubDate = item.querySelector("pubDate")?.textContent || "";
+        const desc = item.querySelector("description")?.textContent || "";
+        const enclosure = item.querySelector("enclosure");
+        const audioUrl = enclosure ? enclosure.getAttribute("url") : null;
 
-          const card = document.createElement("div");
-          card.className = "episode-card";
+        // Image - try multiple sources
+        let imgUrl = "";
+        const itunesImage = item.getElementsByTagName("itunes:image")[0];
+        const imageTag = xml.querySelector("image url");
+        if (itunesImage) {
+          imgUrl = itunesImage.getAttribute("href");
+        } else if (imageTag) {
+          imgUrl = imageTag.textContent;
+        } else {
+          // Try to extract image URL from description content
+          const imgMatch = desc.match(/<img[^>]+src="([^">]+)"/i);
+          if (imgMatch) imgUrl = imgMatch[1];
+        }
+        if (!imgUrl) imgUrl = "https://via.placeholder.com/400x400/7ebd59/ffffff?text=Podcast";
 
-          const imgEl = document.createElement("img");
-          imgEl.className = "episode-image";
-          imgEl.src = imgUrl || "https://via.placeholder.com/400x400?text=Podcast";
-          imgEl.alt = title;
+        // Create card div
+        const card = document.createElement("div");
+        card.className = "episode-card";
 
-          const content = document.createElement("div");
-          content.className = "episode-content";
+        const imgEl = document.createElement("img");
+        imgEl.className = "episode-image";
+        imgEl.src = imgUrl;
+        imgEl.alt = title;
 
-          content.innerHTML = `
-            <h3>${title}</h3>
-            <div class="date">${formatDate(pubDate)}</div>
-            <div class="desc">${desc.replace(/<[^>]*>?/gm, '').slice(0, 120)}…</div>
-          `;
+        const content = document.createElement("div");
+        content.className = "episode-content";
 
-          if (audioUrl) {
-            const audioEl = document.createElement("audio");
-            audioEl.controls = true;
-            audioEl.src = audioUrl;
-            content.appendChild(audioEl);
-          }
+        const h3 = document.createElement("h3");
+        h3.textContent = title;
 
-          card.appendChild(imgEl);
-          card.appendChild(content);
-          container.appendChild(card);
-        });
-      })
-      .catch(err => {
-        console.error("RSS fetch or parse error:", err);
-        document.getElementById("err").style.display = "block";
-      });
-  </script>
-</body>
-</html>
+        const dateDiv = document.createElement("div");
+        dateDiv.className = "date";
+        dateDiv.textContent = formatDate(pubDate);
+
+        const descDiv = document.createElement("div");
+        descDiv.className = "desc";
+        descDiv.textContent = desc.length > 140 ? desc.slice(0, 137) + "..." : desc;
+
+        content.appendChild(h3);
+        content.appendChild(dateDiv);
+        content.appendChild(descDiv);
+
+        if(audioUrl) {
+          const audioEl = document.createElement("audio");
+          audioEl.controls = true;
+          audioEl.src = audioUrl;
+
+          // Pause currently playing audio when new audio plays
+          audioEl.addEventListener("play", () => {
+            if(currentAudio && currentAudio !== audioEl) {
+              currentAudio.pause();
+            }
+            currentAudio = audioEl;
+          });
+
+          content.appendChild(audioEl);
+        }
+
+        card
