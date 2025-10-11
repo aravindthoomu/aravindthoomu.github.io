@@ -2,69 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>The Insight Journal by Aravind Thoomu</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-            background-color: #f4f9f4;
-            color: #2e3d29;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #3a5a40;
-            font-weight: 700;
-            font-size: 2.5em;
-            text-align: center;
-            margin-bottom: 40px;
-            letter-spacing: 1.1px;
-            text-shadow: 2px 2px 4px rgba(83, 117, 70, 0.5);
-        }
-        #blog-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        .blog-post {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 6px 15px rgba(66, 135, 65, 0.15);
-            margin-bottom: 25px;
-            padding: 25px;
-            transition: box-shadow 0.3s ease, transform 0.2s ease;
-            cursor: pointer;
-        }
-        .blog-post:hover {
-            box-shadow: 0 10px 25px rgba(80, 155, 70, 0.3);
-            transform: translateY(-5px);
-        }
-        .blog-post:active {
-            transform: translateY(-2px) scale(0.98);
-            box-shadow: 0 8px 20px rgba(70, 145, 65, 0.25);
-        }
-        .blog-post h3 {
-            margin-top: 0;
-            margin-bottom: 8px;
-            font-size: 1.6em;
-            color: #2e4d23;
-            transition: color 0.3s ease;
-        }
-        .blog-post h3 a {
-            text-decoration: none;
-            color: #568d48;
-            transition: color 0.3s ease;
-        }
-        .blog-post h3 a:hover {
-            color: #3a652a;
-            text-decoration: underline;
-        }
-        .blog-post em {
-            color: #5f7d55;
-            font-size: 0.9em;
-            display: block;
-            margin-bottom: 12px;
-        }
-        .blog-thumb {
-            float: right;
-            max-width: 180px;
-            max-height: 140px;
-            border-radius
+    <title>Minimal Blog Check</title>
+</head>
+<body>
+    <h1>Blog Check</h1>
+    <div id="blog-container">Loading blog posts...</div>
+    <script>
+        fetch('Fetch.xml')
+            .then(response => response.text())
+            .then(str => {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(str, "application/xml");
+                const items = xml.querySelectorAll("item");
+                const container = document.getElementById("blog-container");
+                container.innerHTML = "";
+                for(let i=0; i < Math.min(items.length, 5); i++) {
+                    const item = items[i];
+                    const title = item.querySelector("title").textContent;
+                    const link = item.querySelector("link").textContent;
+                    const postHTML = `<p><a href="${link}" target="_blank">${title}</a></p>`;
+                    container.innerHTML += postHTML;
+                }
+            })
+            .catch(error => {
+                document.getElementById("blog-container").innerHTML = "Failed to load posts.";
+                console.error(error);
+            });
+    </script>
+</body>
+</html>
