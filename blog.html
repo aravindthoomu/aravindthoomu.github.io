@@ -7,8 +7,9 @@
         body { font-family: Arial, sans-serif; padding: 20px; }
         .blog-post { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,.05); }
         .blog-post h3 { margin: 0 0 5px 0; }
-        .blog-post a { text-decoration: none; color: #007BFF; }
-        .blog-post a:hover { text-decoration: underline; }
+        .blog-post a, .read-btn { text-decoration: none; color: #007BFF; }
+        .read-btn { display:inline-block; margin-top:10px; padding:6px 13px; background:#eee; border-radius:5px; border:1px solid #ddd; color:#007BFF; font-size:0.95em; font-weight:600;}
+        .blog-thumb { max-width:180px; max-height:180px; border-radius:6px; margin-bottom:10px; }
         .blog-post em { color: #555; font-size: 0.9em; }
     </style>
 </head>
@@ -32,16 +33,36 @@
                 }
                 container.innerHTML = "";
                 items.forEach((item, index) => {
-                    if(index === 5) return; // only latest 5 posts
+                    if(index === 5) return; // latest 5 posts
+
+                    // Title and link
                     const title = item.querySelector("title") ? item.querySelector("title").textContent : "No Title";
                     const link = item.querySelector("link") ? item.querySelector("link").textContent : "#";
                     const pubDate = item.querySelector("pubDate") ? item.querySelector("pubDate").textContent : "";
                     const description = item.querySelector("description") ? item.querySelector("description").textContent : "";
+
+                    // Extract image from <content:encoded>
+                    let imgHtml = '';
+                    const contentNode = item.getElementsByTagName("content:encoded")[0];
+                    if(contentNode) {
+                        const contentHTML = contentNode.textContent;
+                        // Match first img src
+                        const imgMatch = contentHTML.match(/<img[^>]+src="([^">]+)"/i);
+                        if(imgMatch && imgMatch[1]) {
+                            imgHtml = `<img src="${imgMatch[1]}" class="blog-thumb" alt="Blog thumbnail">`;
+                        }
+                    }
+
+                    // "Read on Medium" Button
+                    const buttonHtml = `<a href="${link}" class="read-btn" target="_blank">Read on Medium</a>`;
+
                     const postHTML =
                         `<div class="blog-post">
+                            ${imgHtml}
                             <h3><a href="${link}" target="_blank">${title}</a></h3>
                             <p><em>${pubDate}</em></p>
                             <p>${description}</p>
+                            ${buttonHtml}
                         </div>`;
                     container.innerHTML += postHTML;
                 });
