@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSS Feed</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f9f9f9;
+        margin: 20px;
+    }
+    #rss-feed-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .rss-card {
+        display: flex;
+        flex-direction: column;
+        width: 250px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .rss-thumb {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+    }
+    .rss-content {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .rss-title {
+        color: green;
+        font-size: 1.1em;
+        margin: 0;
+    }
+    .rss-desc {
+        font-size: 0.95em;
+        line-height: 1.2em;
+        max-height: 2.4em; /* 2 lines */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .rss-readmore {
+        margin-top: auto;
+        align-self: flex-start;
+        color: #007BFF;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .rss-readmore:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+<body>
+
+<div id="rss-feed-container"></div>
+
+<script>
+async function loadRSSFeed(url) {
+    try {
+        const response = await fetch(url);
+        const text = await response.text();
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(text, "application/xml");
+        const items = xml.querySelectorAll("item");
+
+        const container = document.getElementById("rss-feed-container");
+        container.innerHTML = '';
+
+        items.forEach(item => {
+            const title = item.querySelector("title")?.textContent || "No Title";
+            const link = item.querySelector("link")?.textContent || "#";
+            const description = item.querySelector("description")?.textContent || "";
+            
+            // Try multiple thumbnail sources
+            let thumbnail = item.querySelector("media\\:thumbnail")?.getAttribute("url") ||
+                            item.querySelector("enclosure")?.getAttribute("url") ||
+                            "https://via.placeholder.com/150"; // fallback image
+
+            const card = document.createElement("div");
+            card.className = "rss-card";
+            card.innerHTML = `
+                <img src="${thumbnail}" alt="Thumbnail" class="rss-thumb">
+                <div class="rss-content">
+                    <h3 class="rss-title">${title}</h3>
+                    <p class="rss-desc">${description}</p>
+                    <a href="${link}" target="_blank" class="rss-readmore">Read More</a>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    } catch (error) {
+        console.error("Failed to load RSS feed:", error);
+        document.getElementById("rss-feed-container").innerHTML = "Failed to load feed.";
+    }
+}
+
+// Replace with your RSS feed URL
+loadRSSFeed("YOUR_RSS_FEED_URL_HERE");
+</script>
+
+</body>
+</html>
