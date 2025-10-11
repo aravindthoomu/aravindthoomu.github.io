@@ -11,12 +11,19 @@
         .read-btn { display:inline-block; margin-top:10px; padding:6px 13px; background:#eee; border-radius:5px; border:1px solid #ddd; color:#007BFF; font-size:0.95em; font-weight:600;}
         .blog-thumb { max-width:180px; max-height:180px; border-radius:6px; margin-bottom:10px; }
         .blog-post em { color: #555; font-size: 0.9em; }
+        .blog-description { margin-top: 5px; margin-bottom: 10px; color: #333; }
     </style>
 </head>
 <body>
     <h1>My Blog</h1>
     <div id="blog-container">Loading blog posts...</div>
     <script>
+        function stripHtml(html) {
+            const tmp = document.createElement("div");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
+
         fetch('Fetch.xml')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -33,27 +40,32 @@
                 }
                 container.innerHTML = "";
                 items.forEach((item, index) => {
-                    if(index === 5) return; // latest 5 posts
+                    if(index === 5) return; // show only latest 5 posts
 
-                    // Title and link
                     const title = item.querySelector("title") ? item.querySelector("title").textContent : "No Title";
                     const link = item.querySelector("link") ? item.querySelector("link").textContent : "#";
                     const pubDate = item.querySelector("pubDate") ? item.querySelector("pubDate").textContent : "";
-                    const description = item.querySelector("description") ? item.querySelector("description").textContent : "";
-
-                    // Extract image from <content:encoded>
-                    let imgHtml = '';
+                    let descriptionText = "";
+                    
+                    // Extract content encoded HTML
                     const contentNode = item.getElementsByTagName("content:encoded")[0];
                     if(contentNode) {
                         const contentHTML = contentNode.textContent;
-                        // Match first img src
+                        // get clean text snippet (limit to about 200 chars)
+                        let plainText = stripHtml(contentHTML);
+                        descriptionText = plainText.length > 200 ? plainText.substring(0, 197) + "..." : plainText;
+                    }
+
+                    // Extract image from content:encoded HTML
+                    let imgHtml = '';
+                    if(contentNode) {
+                        const contentHTML = contentNode.textContent;
                         const imgMatch = contentHTML.match(/<img[^>]+src="([^">]+)"/i);
                         if(imgMatch && imgMatch[1]) {
                             imgHtml = `<img src="${imgMatch[1]}" class="blog-thumb" alt="Blog thumbnail">`;
                         }
                     }
 
-                    // "Read More" Button
                     const buttonHtml = `<a href="${link}" class="read-btn" target="_blank">Read on Medium</a>`;
 
                     const postHTML =
@@ -61,9 +73,10 @@
                             ${imgHtml}
                             <h3><a href="${link}" target="_blank">${title}</a></h3>
                             <p><em>${pubDate}</em></p>
-                            <p>${description}</p>
+                            <p class="blog-description">${descriptionText}</p>
                             ${buttonHtml}
                         </div>`;
+
                     container.innerHTML += postHTML;
                 });
             })
