@@ -2,31 +2,181 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Minimal Blog Check</title>
+    <title>The Insight Journal by Aravind Thoomu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f9f4;
+            color: #2e3d29;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #3a5a40;
+            font-weight: 700;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 1.1px;
+            text-shadow: 2px 2px 4px rgba(83, 117, 70, 0.5);
+        }
+        #blog-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .blog-post {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(66, 135, 65, 0.15);
+            margin-bottom: 25px;
+            padding: 25px;
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+        .blog-post:hover {
+            box-shadow: 0 10px 25px rgba(80, 155, 70, 0.3);
+            transform: translateY(-5px);
+        }
+        .blog-post:active {
+            transform: translateY(-2px) scale(0.98);
+            box-shadow: 0 8px 20px rgba(70, 145, 65, 0.25);
+        }
+        .blog-post h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.6em;
+            color: #2e4d23;
+            transition: color 0.3s ease;
+        }
+        .blog-post h3 a {
+            text-decoration: none;
+            color: #568d48;
+            transition: color 0.3s ease;
+        }
+        .blog-post h3 a:hover {
+            color: #3a652a;
+            text-decoration: underline;
+        }
+        .blog-post em {
+            color: #5f7d55;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .blog-thumb {
+            float: right;
+            max-width: 180px;
+            max-height: 140px;
+            border-radius: 10px;
+            margin-left: 20px;
+            box-shadow: 0 4px 10px rgba(80, 140, 50, 0.2);
+            transition: box-shadow 0.3s ease;
+        }
+        .blog-thumb:hover {
+            box-shadow: 0 8px 18px rgba(70, 160, 40, 0.3);
+        }
+        .blog-description {
+            margin-top: 5px;
+            margin-bottom: 15px;
+            color: #3b4d29;
+            font-size: 1em;
+        }
+        .read-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 18px;
+            background: #7ebd59;
+            border-radius: 8px;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(126, 189, 89, 0.5);
+            text-decoration: none;
+            transition: background-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .read-btn:hover {
+            background: #56903f;
+            box-shadow: 0 6px 15px rgba(86, 144, 63, 0.7);
+            text-decoration: none;
+        }
+        .read-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 3px 8px rgba(86, 144, 63, 0.5);
+        }
+        /* Clear floats in blog-post */
+        .blog-post::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
 </head>
 <body>
-    <h1>Blog Check</h1>
+    <h1>The Insight Journal by Aravind Thoomu</h1>
     <div id="blog-container">Loading blog posts...</div>
     <script>
+        function stripHtml(html) {
+            const tmp = document.createElement("div");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
         fetch('Fetch.xml')
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text();
+            })
             .then(str => {
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(str, "application/xml");
                 const items = xml.querySelectorAll("item");
                 const container = document.getElementById("blog-container");
-                container.innerHTML = "";
-                for(let i=0; i < Math.min(items.length, 5); i++) {
-                    const item = items[i];
-                    const title = item.querySelector("title").textContent;
-                    const link = item.querySelector("link").textContent;
-                    const postHTML = `<p><a href="${link}" target="_blank">${title}</a></p>`;
-                    container.innerHTML += postHTML;
+                if (items.length === 0) {
+                    container.innerHTML = "<p>No blog posts found.</p>";
+                    return;
                 }
+                container.innerHTML = "";
+                items.forEach((item, index) => {
+                    if(index === 5) return; // Only show latest 5
+
+                    const title = item.querySelector("title") ? item.querySelector("title").textContent : "No Title";
+                    const link = item.querySelector("link") ? item.querySelector("link").textContent : "#";
+                    const pubDate = item.querySelector("pubDate") ? item.querySelector("pubDate").textContent : "";
+                    let descriptionText = "";
+
+                    const contentNode = item.getElementsByTagName("content:encoded")[0];
+                    if(contentNode) {
+                        const contentHTML = contentNode.textContent;
+                        let plainText = stripHtml(contentHTML);
+                        descriptionText = plainText.length > 200 ? plainText.substring(0, 197) + "..." : plainText;
+                    }
+
+                    let imgHtml = '';
+                    if(contentNode) {
+                        const contentHTML = contentNode.textContent;
+                        const imgMatch = contentHTML.match(/<img[^>]+src="([^">]+)"/i);
+                        if(imgMatch && imgMatch[1]) {
+                            imgHtml = `<img src="${imgMatch[1]}" class="blog-thumb" alt="Blog thumbnail">`;
+                        }
+                    }
+
+                    const buttonHtml = `<a href="${link}" class="read-btn" target="_blank">Read on Medium</a>`;
+
+                    const postHTML =
+                        `<div class="blog-post" tabindex="0" role="article">
+                            ${imgHtml}
+                            <h3><a href="${link}" target="_blank">${title}</a></h3>
+                            <p><em>${pubDate}</em></p>
+                            <p class="blog-description">${descriptionText}</p>
+                            ${buttonHtml}
+                        </div>`;
+
+                    container.innerHTML += postHTML;
+                });
             })
             .catch(error => {
-                document.getElementById("blog-container").innerHTML = "Failed to load posts.";
-                console.error(error);
+                document.getElementById("blog-container").innerHTML = "<p>Failed to load blog posts.</p>";
             });
     </script>
 </body>
