@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podcast — Aravind Speaks</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: #121212;
+      color: #FFFFFF;
+      line-height: 1.6;
+    }
+    header {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    header h1 {
+      font-size: 2.5rem;
+      color: #1DB954;
+      margin-bottom: 10px;
+    }
+    header p {
+      color: #ccc;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .episode-card {
+      background-color: #1e1e1e;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease;
+    }
+    .episode-card:hover {
+      transform: translateY(-5px);
+    }
+    .episode-image {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background-color: #333;
+    }
+    .episode-content {
+      flex: 1;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+    .episode-content h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.1rem;
+      color: #f1f1f1;
+    }
+    .episode-content .date {
+      font-size: 0.9rem;
+      color: #bbb;
+      margin-bottom: 10px;
+    }
+    .episode-content .desc {
+      flex: 1;
+      font-size: 0.95rem;
+      color: #ddd;
+      margin-bottom: 10px;
+    }
+    .episode-content audio {
+      width: 100%;
+      margin-top: auto;
+    }
+    .error {
+      color: #ff6666;
+      text-align: center;
+      margin-top: 50px;
+    }
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎧 Aravind Speaks Podcast</h1>
+    <p>Listen to the latest episodes below</p>
+  </header>
+
+  <main class="container">
+    <div id="episodes" class="grid"></div>
+    <div id="err" class="error" style="display: none;">Unable to load podcast episodes. Please try again later.</div>
+  </main>
+
+  <script>
+    const rssURL = "https://anchor.fm/s/4a4bdd28/podcast/rss";
+
+    // Using codetabs proxy to handle CORS reliably
+    const proxyURL = "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(rssURL);
+
+    function formatDate(str) {
+      const d = new Date(str);
+      return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    fetch(proxyURL)
+      .then(res => res.text())
+      .then(str => {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(str, "application/xml");
+        const items = xml.querySelectorAll("item");
+        if (!items || items.length === 0) throw new Error("No episodes found");
+
+        const container = document.getElementById("episodes");
+        items.forEach(item => {
+          const title = item.querySelector("title")?.textContent || "Untitled Episode";
+          const pubDate = item.querySelector("pubDate")?.textContent || "";
+          const desc = item.querySelector("description")?.textContent || "";
+          const enclosure = item.querySelector("enclosure");
+          const audioUrl = enclosure ? enclosure.getAttribute("url") : "";
+
+          // Try multiple sources for image
+          let imgUrl = "";
+          const itunesImage = item.getElementsByTagName("itunes:image")[0];
+          const imageTag = xml.querySelector("image > url");
+
+          if (itunesImage && itunesImage.getAttribute("href")) {
+            imgUrl = itunesImage.getAttribute("href");
+          } else if (imageTag) {
+            imgUrl = imageTag.textContent;
+          } else {
+            // Sometimes image is embedded in description HTML
+            const match = desc.match(/<img[^>]+src=["']([^"']+)["']/i);
+            if (match) imgUrl = match[1];
+          }
+
+          const card = document.createElement("div");
+          card.className = "episode-card";
+
+          const imgEl = document.createElement("img");
+          imgEl.className = "episode-image";
+          imgEl.src = imgUrl || "https://via.placeholder.com/400x400?text=Podcast";
+          imgEl.alt = title;
+
+          const content = document.createElement("div");
+          content.className = "episode-content";
+
+          content.innerHTML = `
+            <h3>${title}</h3>
+            <div class="date">${formatDate(pubDate)}</div>
+            <div class="desc">${desc.replace(/<[^>]*>?/gm, '').slice(0, 120)}…</div>
+          `;
+
+          if (audioUrl) {
+            const audioEl = document.createElement("audio");
+            audioEl.controls = true;
+            audioEl.src = audioUrl;
+            content.appendChild(audioEl);
+          }
+
+          card.appendChild(imgEl);
+          card.appendChild(content);
+          container.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error("RSS fetch or parse error:", err);
+        document.getElementById("err").style.display = "block";
+      });
+  </script>
+</body>
+</html>
