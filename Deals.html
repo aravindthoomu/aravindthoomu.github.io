@@ -1,136 +1,327 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Amazon Deals – Premium Store</title>
+<title>Recommended Deals on Amazon — Aravind Thoomu</title>
+
+<!-- Elegant Soft Green Theme -->
 <style>
-  body{margin:0;font-family:Inter,Arial,sans-serif;background:#f3f5f1;color:#111}
-  header{background:#fff;padding:20px 28px;box-shadow:0 2px 8px rgba(0,0,0,0.05);position:sticky;top:0;z-index:999}
-  header h1{margin:0;font-size:24px;font-weight:700}
-  section{padding:36px 20px;max-width:1100px;margin:auto}
-  .card-box{background:#fff;border-radius:18px;padding:22px;margin-bottom:34px;box-shadow:0 8px 22px rgba(0,0,0,0.06);border:1px solid #eef0ec;transition:.22s}
-  .card-box:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.10)}
-  .sec-title{font-size:18px;font-weight:700;display:flex;align-items:center;gap:10px}
-  footer{text-align:center;padding:26px 12px;opacity:.8}
-  /* minor responsive tweak */
-  @media (max-width:520px){header h1{font-size:18px}}
+  :root{
+    --bg:#f3f6f1;         /* warm ash / whitish-bg */
+    --card:#ffffff;
+    --accent:#00b341;     /* bright green buttons/accents */
+    --muted:#6b6f6b;
+    --border:#eef1ec;
+    --radius:16px;
+    --maxw:1100px;
+  }
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:#111;}
+  .wrap{max-width:var(--maxw);margin:28px auto;padding:0 18px;}
+  header{background:var(--card);border-radius:14px;padding:20px;border:1px solid var(--border);box-shadow:0 8px 28px rgba(3,9,6,0.04);display:flex;flex-direction:column;gap:10px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand h1{margin:0;font-size:20px;font-weight:700}
+  .subtitle{color:var(--muted);font-size:14px;margin:0}
+  /* Disclosure (prominent) */
+  .disclosure{background:#eefaf0;border-left:5px solid var(--accent);padding:12px 14px;border-radius:8px;font-size:14px;color:#0b3c22}
+  /* Grid of sections */
+  main{margin-top:22px;display:grid;grid-template-columns:1fr;gap:20px}
+  .section-card{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(3,9,6,0.04);transition:transform .18s ease,box-shadow .18s ease}
+  .section-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(3,9,6,0.06)}
+  .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .section-title h2{margin:0;font-size:18px;font-weight:700}
+  .section-desc{color:var(--muted);font-size:13px;margin-top:8px}
+  .widget-wrap{margin-top:16px;min-height:120px;}
+  .fallback{padding:12px;border-radius:8px;background:#fcfcfc;border:1px solid #f0f0f0;color:#333}
+  footer{margin-top:26px;padding:18px;text-align:center;color:var(--muted);font-size:13px}
+  /* small helpers */
+  .tiny{font-size:13px;color:var(--muted)}
+  @media (min-width:900px){
+    main{grid-template-columns:repeat(2,1fr);column-gap:18px}
+  }
+  @media (max-width:520px){
+    .brand h1{font-size:18px}
+    :root{--radius:12px}
+  }
 </style>
+
+<!-- Load Amazon OneTag (inst = your tracking id) -->
+<script async src="https://z-in.amazon-adsystem.com/onetag/v2?inst=aravindkthoom-21"></script>
+
 </head>
 <body>
-<header><h1>🔥 Amazon Deals – Auto-Updating Premium Store</h1></header>
-<section>
+  <div class="wrap">
 
-  <!-- Today -->
-  <div class="card-box">
-    <div class="sec-title">🕒 Today’s Trending Deals</div>
-    <div style="margin-top:16px;">
-      <!-- Amazon Smart Search widget (India) -->
-      <script type="text/javascript">
-        amzn_assoc_placement = "adunit0";
-        amzn_assoc_search_bar = "false";
-        amzn_assoc_tracking_id = "aravindkthoom-21";
-        amzn_assoc_ad_mode = "search";
-        amzn_assoc_ad_type = "smart";
-        amzn_assoc_marketplace = "IN";
-        amzn_assoc_region = "IN";
-        amzn_assoc_default_search_phrase = "Today's Deals";
-        amzn_assoc_default_category = "All";
-        amzn_assoc_linkid = "todaydeals01";
-      </script>
-      <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?Operation=GetAdHtml&MarketPlace=IN"></script>
+    <!-- Header + Disclosure -->
+    <header>
+      <div class="brand">
+        <h1>Recommended Deals on Amazon</h1>
+        <div class="tiny">Curated & auto-updating — updated by Amazon</div>
+      </div>
 
-      <!-- Fallback for no-JS / blocked scripts -->
-      <noscript>
-        <div style="padding:14px;background:#fcfcfc;border-radius:8px;border:1px solid #eee;">
-          <a href="https://www.amazon.in/s?k=today%27s+deals&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Today's Deals on Amazon (opens in new tab)</a>
+      <!-- Prominent disclosure at the top (required) -->
+      <div class="disclosure">
+        <strong>Disclosure:</strong> As an Amazon Associate I earn from qualifying purchases. This page uses Amazon's widgets which automatically update.
+      </div>
+    </header>
+
+    <!-- Main sections -->
+    <main>
+
+      <!-- TODAY'S TRENDING -->
+      <section class="section-card" id="sec-today">
+        <div class="section-title">
+          <h2>🕒 Today’s Trending Deals</h2>
+          <div class="tiny">Live, auto-updating</div>
         </div>
-      </noscript>
-    </div>
+        <p class="section-desc">Handpicked by Amazon’s deals engine — updated automatically.</p>
+
+        <div class="widget-wrap" id="w-today">
+          <!-- responsive widget -->
+          <script>
+            amzn_assoc_ad_type = "responsive_search_widget";
+            amzn_assoc_tracking_id = "aravindkthoom-21";
+            amzn_assoc_marketplace = "amazon.in";
+            amzn_assoc_region = "IN";
+            amzn_assoc_default_search_phrase = "today's deals";
+            amzn_assoc_rows = "4";
+            amzn_assoc_columns = "1";
+          </script>
+          <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?MarketPlace=IN"></script>
+
+          <noscript class="fallback">
+            Viewing without JavaScript? <a href="https://www.amazon.in/s?k=today%27s+deals&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Today's Deals on Amazon</a>
+          </noscript>
+        </div>
+      </section>
+
+      <!-- BEST SELLERS -->
+      <section class="section-card" id="sec-bestsellers">
+        <div class="section-title">
+          <h2>🏆 Best Sellers</h2>
+          <div class="tiny">Popular picks in India</div>
+        </div>
+        <p class="section-desc">Top selling items across categories — ideal for gift & quick buys.</p>
+
+        <div class="widget-wrap" id="w-bestsellers">
+          <script>
+            amzn_assoc_ad_type = "responsive_search_widget";
+            amzn_assoc_tracking_id = "aravindkthoom-21";
+            amzn_assoc_marketplace = "amazon.in";
+            amzn_assoc_region = "IN";
+            amzn_assoc_default_search_phrase = "best sellers";
+            amzn_assoc_rows = "4";
+            amzn_assoc_columns = "1";
+          </script>
+          <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?MarketPlace=IN"></script>
+
+          <noscript class="fallback">
+            <a href="https://www.amazon.in/gp/bestsellers?tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Amazon Best Sellers</a>
+          </noscript>
+        </div>
+      </section>
+
+      <!-- ELECTRONICS -->
+      <section class="section-card" id="sec-electronics">
+        <div class="section-title">
+          <h2>🔌 Hot Electronics Deals</h2>
+          <div class="tiny">Phones, accessories & gadgets</div>
+        </div>
+        <p class="section-desc">Trending mobile & consumer electronics offers updated automatically.</p>
+
+        <div class="widget-wrap" id="w-electronics">
+          <script>
+            amzn_assoc_ad_type = "responsive_search_widget";
+            amzn_assoc_tracking_id = "aravindkthoom-21";
+            amzn_assoc_marketplace = "amazon.in";
+            amzn_assoc_region = "IN";
+            amzn_assoc_default_search_phrase = "electronics deals";
+            amzn_assoc_rows = "4";
+            amzn_assoc_columns = "1";
+          </script>
+          <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?MarketPlace=IN"></script>
+
+          <noscript class="fallback">
+            <a href="https://www.amazon.in/s?k=electronics+deals&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Electronics Deals</a>
+          </noscript>
+        </div>
+      </section>
+
+      <!-- BEAUTY & SKINCARE -->
+      <section class="section-card" id="sec-beauty">
+        <div class="section-title">
+          <h2>💚 Beauty & Skincare Picks</h2>
+          <div class="tiny">Skin, hair & grooming</div>
+        </div>
+        <p class="section-desc">Curated deals relevant to wellness, beauty & grooming.</p>
+
+        <div class="widget-wrap" id="w-beauty">
+          <script>
+            amzn_assoc_ad_type = "responsive_search_widget";
+            amzn_assoc_tracking_id = "aravindkthoom-21";
+            amzn_assoc_marketplace = "amazon.in";
+            amzn_assoc_region = "IN";
+            amzn_assoc_default_search_phrase = "skincare deals";
+            amzn_assoc_rows = "4";
+            amzn_assoc_columns = "1";
+          </script>
+          <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?MarketPlace=IN"></script>
+
+          <noscript class="fallback">
+            <a href="https://www.amazon.in/s?k=skincare+deals&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Skincare Deals</a>
+          </noscript>
+        </div>
+      </section>
+
+      <!-- HOME & KITCHEN -->
+      <section class="section-card" id="sec-home">
+        <div class="section-title">
+          <h2>🏠 Home & Kitchen Essentials</h2>
+          <div class="tiny">Practical picks that save time</div>
+        </div>
+        <p class="section-desc">Small appliances, storage, home gadgets — updated by Amazon.</p>
+
+        <div class="widget-wrap" id="w-home">
+          <script>
+            amzn_assoc_ad_type = "responsive_search_widget";
+            amzn_assoc_tracking_id = "aravindkthoom-21";
+            amzn_assoc_marketplace = "amazon.in";
+            amzn_assoc_region = "IN";
+            amzn_assoc_default_search_phrase = "home and kitchen deals";
+            amzn_assoc_rows = "4";
+            amzn_assoc_columns = "1";
+          </script>
+          <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?MarketPlace=IN"></script>
+
+          <noscript class="fallback">
+            <a href="https://www.amazon.in/s?k=home+and+kitchen+deals&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Home & Kitchen Deals</a>
+          </noscript>
+        </div>
+      </section>
+
+      <!-- CAREER BOOKS (Podcast-aligned) -->
+      <section class="section-card" id="sec-books">
+        <div class="section-title">
+          <h2>📚 Career & Self-Help Books</h2>
+          <div class="tiny">Books that resonate with your podcast</div>
+        </div>
+        <p class="section-desc">Business, career growth, and personal development titles — deals auto-updated.</p>
+
+        <div class="widget-wrap" id="w-books">
+          <script>
+            amzn_assoc_ad_type = "responsive_search_widget";
+            amzn_assoc_tracking_id = "aravindkthoom-21";
+            amzn_assoc_marketplace = "amazon.in";
+            amzn_assoc_region = "IN";
+            amzn_assoc_default_search_phrase = "career books";
+            amzn_assoc_rows = "4";
+            amzn_assoc_columns = "1";
+          </script>
+          <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?MarketPlace=IN"></script>
+
+          <noscript class="fallback">
+            <a href="https://www.amazon.in/s?k=career+books&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Career Books on Amazon</a>
+          </noscript>
+        </div>
+      </section>
+
+      <!-- KIDS & LEARNING (Author theme) -->
+      <section class="section-card" id="sec-kids">
+        <div class="section-title">
+          <h2>🎈 Kids & Learning</h2>
+          <div class="tiny">Stories, learning toys & kids' books</div>
+        </div>
+        <p class="section-desc">Selections tailored to kids — updated automatically from Amazon.</p>
+
+        <div class="widget-wrap" id="w-kids">
+          <script>
+            amzn_assoc_ad_type = "responsive_search_widget";
+            amzn_assoc_tracking_id = "aravindkthoom-21";
+            amzn_assoc_marketplace = "amazon.in";
+            amzn_assoc_region = "IN";
+            amzn_assoc_default_search_phrase = "kids learning books toys";
+            amzn_assoc_rows = "4";
+            amzn_assoc_columns = "1";
+          </script>
+          <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?MarketPlace=IN"></script>
+
+          <noscript class="fallback">
+            <a href="https://www.amazon.in/s?k=kids+books&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Kids Books & Toys</a>
+          </noscript>
+        </div>
+      </section>
+
+      <!-- UNDER ₹499 (high-conversion deals) -->
+      <section class="section-card" id="sec-budget">
+        <div class="section-title">
+          <h2>💸 Best Under ₹499</h2>
+          <div class="tiny">Budget picks that convert well</div>
+        </div>
+        <p class="section-desc">Affordable picks for impulse buys — auto-updating feed from Amazon.</p>
+
+        <div class="widget-wrap" id="w-budget">
+          <script>
+            amzn_assoc_ad_type = "responsive_search_widget";
+            amzn_assoc_tracking_id = "aravindkthoom-21";
+            amzn_assoc_marketplace = "amazon.in";
+            amzn_assoc_region = "IN";
+            amzn_assoc_default_search_phrase = "under 499";
+            amzn_assoc_rows = "4";
+            amzn_assoc_columns = "1";
+          </script>
+          <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?MarketPlace=IN"></script>
+
+          <noscript class="fallback">
+            <a href="https://www.amazon.in/s?k=under+499&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See affordable deals on Amazon</a>
+          </noscript>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div>Built by Aravind Thoomu — curated deals updated automatically by Amazon.</div>
+      <div style="margin-top:8px;font-size:12px;color:var(--muted)">No prices or ratings are shown here — Amazon provides product details on their site.</div>
+    </footer>
   </div>
 
-  <!-- Best sellers -->
-  <div class="card-box">
-    <div class="sec-title">🏆 Best Sellers in India</div>
-    <div style="margin-top:16px;">
-      <script type="text/javascript">
-        amzn_assoc_placement = "adunit0";
-        amzn_assoc_tracking_id = "aravindkthoom-21";
-        amzn_assoc_ad_mode = "search";
-        amzn_assoc_ad_type = "smart";
-        amzn_assoc_marketplace = "IN";
-        amzn_assoc_region = "IN";
-        amzn_assoc_default_search_phrase = "Amazon Best Sellers";
-        amzn_assoc_default_category = "All";
-        amzn_assoc_search_bar = "false";
-        amzn_assoc_linkid = "bestseller01";
-      </script>
-      <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?Operation=GetAdHtml&MarketPlace=IN"></script>
+  <!-- Small script: detect blocked/empty Amazon widgets and show helpful fallback -->
+  <script>
+    (function waitForWidgets(){
+      // list of widget container IDs
+      const ids = ['w-today','w-bestsellers','w-electronics','w-beauty','w-home','w-books','w-kids','w-budget'];
+      // after widgets have had time to load, check each container for content
+      setTimeout(()=> {
+        ids.forEach(id => {
+          const container = document.getElementById(id);
+          if(!container) return;
+          // The Amazon widget usually injects an iframe or a few child nodes
+          const hasContent = container.querySelector('iframe, .amzn-assoc-ad, .asinTitle, img') || container.querySelectorAll('*').length > 1;
+          if(!hasContent){
+            // show fallback (if noscript exists, keep it; otherwise append)
+            if(!container.querySelector('.fallback-js')){
+              const fallback = document.createElement('div');
+              fallback.className = 'fallback-js fallback';
+              const q = {
+                'w-today': "today's+deals",
+                'w-bestsellers': "bestsellers",
+                'w-electronics': "electronics+deals",
+                'w-beauty': "skincare+deals",
+                'w-home': "home+and+kitchen+deals",
+                'w-books': "career+books",
+                'w-kids': "kids+books",
+                'w-budget': "under+499"
+              }[id] || 'deals';
+              const url = 'https://www.amazon.in/s?k=' + encodeURIComponent(q) + '&tag=aravindkthoom-21';
+              fallback.innerHTML = 'We couldn’t load the live widget (your browser or an extension may be blocking third-party scripts). <a href="' + url + '" target="_blank" rel="nofollow noopener">Click here to see related deals on Amazon</a>.';
+              container.appendChild(fallback);
+            }
+          }
+        });
+      }, 2000); // 2s wait — Amazon widgets are usually quick
+    })();
+  </script>
 
-      <noscript>
-        <div style="padding:14px;background:#fcfcfc;border-radius:8px;border:1px solid #eee;">
-          <a href="https://www.amazon.in/gp/bestsellers?tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Amazon Best Sellers (opens in new tab)</a>
-        </div>
-      </noscript>
-    </div>
-  </div>
-
-  <!-- Electronics -->
-  <div class="card-box">
-    <div class="sec-title">🔥 Hot Electronics Deals</div>
-    <div style="margin-top:16px;">
-      <script type="text/javascript">
-        amzn_assoc_placement = "adunit0";
-        amzn_assoc_search_bar = "false";
-        amzn_assoc_tracking_id = "aravindkthoom-21";
-        amzn_assoc_ad_mode = "search";
-        amzn_assoc_ad_type = "smart";
-        amzn_assoc_marketplace = "IN";
-        amzn_assoc_region = "IN";
-        amzn_assoc_default_search_phrase = "Electronics Deals";
-        amzn_assoc_default_category = "Electronics";
-        amzn_assoc_linkid = "electronics01";
-      </script>
-      <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?Operation=GetAdHtml&MarketPlace=IN"></script>
-
-      <noscript>
-        <div style="padding:14px;background:#fcfcfc;border-radius:8px;border:1px solid #eee;">
-          <a href="https://www.amazon.in/s?k=electronics+deals&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Electronics Deals on Amazon</a>
-        </div>
-      </noscript>
-    </div>
-  </div>
-
-  <!-- Beauty -->
-  <div class="card-box">
-    <div class="sec-title">💚 Beauty & Skincare Deals</div>
-    <div style="margin-top:16px;">
-      <script type="text/javascript">
-        amzn_assoc_placement = "adunit0";
-        amzn_assoc_search_bar = "false";
-        amzn_assoc_tracking_id = "aravindkthoom-21";
-        amzn_assoc_ad_mode = "search";
-        amzn_assoc_ad_type = "smart";
-        amzn_assoc_marketplace = "IN";
-        amzn_assoc_region = "IN";
-        amzn_assoc_default_search_phrase = "Skincare Deals";
-        amzn_assoc_default_category = "Beauty";
-        amzn_assoc_linkid = "beauty01";
-      </script>
-      <script async src="https://z-in.amazon-adsystem.com/widgets/onejs?Operation=GetAdHtml&MarketPlace=IN"></script>
-
-      <noscript>
-        <div style="padding:14px;background:#fcfcfc;border-radius:8px;border:1px solid #eee;">
-          <a href="https://www.amazon.in/s?k=skincare+deals&tag=aravindkthoom-21" target="_blank" rel="nofollow noopener">See Skincare Deals on Amazon</a>
-        </div>
-      </noscript>
-    </div>
-  </div>
-
-</section>
-
-<footer>
-  <p><strong>Disclosure:</strong> As an Amazon Associate I earn from qualifying purchases.</p>
-</footer>
 </body>
 </html>
