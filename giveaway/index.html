@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Giveaway Access</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Prevent indexing -->
+
+  <meta name="robots" content="noindex">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0b3d2e, #145a32);
+      color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 500px;
+      padding: 30px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    p {
+      opacity: 0.85;
+    }
+
+    input {
+      padding: 12px;
+      width: 80%;
+      max-width: 280px;
+      border-radius: 6px;
+      border: none;
+      margin-top: 15px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 25px;
+      background: #2ecc71;
+      color: #0b3d2e;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #27ae60;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .start-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: #2ecc71;
+      color: #0b3d2e;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+```
+<!-- Email Gate -->
+<div id="gate">
+  <h2>📖 Get Access to the Story</h2>
+  <p>Enter your email to start reading</p>
+
+  <form id="emailForm">
+    <input 
+      type="email" 
+      name="email" 
+      placeholder="Your email" 
+      required
+    >
+    <br>
+    <button type="submit">Continue</button>
+  </form>
+
+  <p style="font-size:12px; margin-top:15px;">
+    No spam. Just updates & stories.
+  </p>
+</div>
+
+<!-- Unlocked Content -->
+<div id="content" class="hidden">
+  <h2>🇮🇪 You're in!</h2>
+  <p>Enjoy the story.</p>
+
+  <a href="/storybook.html" class="start-btn">
+    Start Reading 📖
+  </a>
+</div>
+```
+
+  </div>
+
+  <script>
+    const form = document.getElementById("emailForm");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const data = new FormData(form);
+
+      fetch("https://formspree.io/f/xvzddkvn", {
+        method: "POST",
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      }).then(response => {
+        if (response.ok) {
+          document.getElementById("gate").style.display = "none";
+          document.getElementById("content").classList.remove("hidden");
+        } else {
+          alert("Something went wrong. Please try again.");
+        }
+      }).catch(() => {
+        alert("Network error. Please try again.");
+      });
+    });
+  </script>
+
+</body>
+</html>
