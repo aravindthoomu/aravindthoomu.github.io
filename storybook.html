@@ -68,6 +68,35 @@
   <div class="book-container">
     <div class="_df_book" source="assets/books/storybook.pdf"></div>
   </div>
+<div id="reviewBox" style="
+  display:none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.75);
+  padding: 14px 18px;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+">
+  Enjoying the story?  
+  <a href="YOUR_AMAZON_LINK" target="_blank" style="
+    color:#2ecc71;
+    font-weight:bold;
+    text-decoration:none;
+    margin-left:5px;
+  ">
+    Leave a review ⭐
+  </a>
+</div>
+
+<script>
+  // Show after 45 seconds
+  setTimeout(function() {
+    document.getElementById("reviewBox").style.display = "block";
+  }, 45000);
+</script>
 
 </body>
 </html>
