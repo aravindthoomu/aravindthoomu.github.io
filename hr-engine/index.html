@@ -1,0 +1,2120 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>People Analytics Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --surface-soft: #f9fbfd;
+      --border: #dde5ee;
+      --text: #182230;
+      --muted: #667085;
+      --primary: #4F46E5;
+      --primary-dark: #4338ca;
+      --accent: #14b8a6;
+      --warning: #f59e0b;
+      --shadow: 0 14px 35px rgba(16, 24, 40, 0.08);
+      --radius: 12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, rgba(37, 99, 235, 0.08), rgba(246, 248, 251, 0) 320px),
+        var(--bg);
+      color: var(--text);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app-shell {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 28px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(221, 229, 238, 0.9);
+      border-radius: 14px;
+      box-shadow: 0 16px 36px rgba(16, 24, 40, 0.08);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 16px;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #06b6d4);
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 750;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .confidence-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      border: 1px solid #c7d2fe;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px;
+      background: #eef2ff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+    }
+
+    .tab-button {
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: #475467;
+      cursor: pointer;
+      min-height: 38px;
+      padding: 0 14px;
+      font-size: 14px;
+      font-weight: 650;
+      white-space: nowrap;
+      position: relative;
+      transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .tab-button:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .tab-button.active {
+      color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.14);
+    }
+
+    .tab-button.active::after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 3px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    .page-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+      gap: 20px;
+      align-items: stretch;
+      margin: 30px 0 22px;
+    }
+
+    .headline,
+    .metric-strip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .headline {
+      padding: 26px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .headline p {
+      max-width: 720px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .metric-strip {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px;
+      background: var(--surface-soft);
+      border: 1px solid #e8eef5;
+      border-radius: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .metric strong {
+      font-size: 18px;
+    }
+
+    .panel {
+      display: none;
+      animation: fadeIn 180ms ease;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 28px rgba(16, 24, 40, 0.07);
+    }
+
+    .card-header {
+      padding: 22px 22px 0;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    .card-copy {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .card-body {
+      padding: 22px;
+    }
+
+    .upload-box {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px dashed #b8c4d4;
+      border-radius: 12px;
+    }
+
+    .upload-box label {
+      color: #344054;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      min-height: 44px;
+      padding: 9px;
+      color: var(--muted);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .primary-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 46px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 750;
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .primary-action:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 26px rgba(79, 70, 229, 0.26);
+    }
+
+    .primary-action:active {
+      transform: translateY(0);
+    }
+
+    .secondary-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 1px solid #c8d4e3;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #344054;
+      cursor: pointer;
+      font-weight: 750;
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .secondary-action:hover {
+      background: #eef6ff;
+      border-color: #9ec5fe;
+      color: var(--primary);
+    }
+
+    .results-card {
+      min-height: 348px;
+    }
+
+    .results-placeholder {
+      display: grid;
+      place-items: center;
+      min-height: 244px;
+      padding: 26px;
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(37, 99, 235, 0.08)),
+        #fbfdff;
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+      color: #667085;
+      font-weight: 650;
+      line-height: 1.5;
+    }
+
+    .analysis-error {
+      padding: 14px 16px;
+      background: #fff1f3;
+      border: 1px solid #ffd6de;
+      border-radius: 12px;
+      color: #b42318;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.5;
+    }
+
+    .results-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
+    .results-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 360px;
+    }
+
+    .results-table th,
+    .results-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e8eef5;
+      font-size: 14px;
+    }
+
+    .results-table th {
+      color: #475467;
+      background: #f8fafc;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .results-table tbody tr:nth-child(even) {
+      background: #fbfdff;
+    }
+
+    .results-table tbody tr:hover {
+      background: #f5f7ff;
+    }
+
+    .results-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .results-table tr.top-employee {
+      background: #f0fdf9;
+    }
+
+    .employee-cell {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 220px;
+      font-weight: 750;
+    }
+
+    .top-badge {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 78px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .risk-high {
+      background: #fee4e2;
+      color: #b42318;
+    }
+
+    .risk-medium {
+      background: #fffaeb;
+      color: #b54708;
+    }
+
+    .risk-low {
+      background: #ecfdf3;
+      color: #067647;
+    }
+
+    .driver-list {
+      color: #475467;
+      font-weight: 650;
+    }
+
+    .credibility-panel {
+      margin-bottom: 16px;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border: 1px solid #d9e3ee;
+      border-radius: 8px;
+      color: #475467;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .credibility-panel strong {
+      color: var(--text);
+    }
+
+    .credibility-warning {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e8eef5;
+      color: #b54708;
+      font-weight: 650;
+    }
+
+    .limitation-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .executive-summary {
+      margin-bottom: 16px;
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px solid #e8eef5;
+      border-radius: 8px;
+    }
+
+    .executive-summary h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    .evidence-section {
+      margin-top: 16px;
+      padding: 18px;
+      background: #ffffff;
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+      box-shadow: 0 8px 22px rgba(16, 24, 40, 0.05);
+    }
+
+    .evidence-section h3 {
+      margin: 0 0 12px;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.3;
+    }
+
+    .evidence-list,
+    .driver-ranking {
+      margin: 0;
+      padding-left: 20px;
+      color: #475467;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .driver-ranking {
+      margin-top: 12px;
+    }
+
+    .scorecard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .scorecard-item {
+      padding: 16px;
+      background: #ffffff;
+      border: 1px solid #e8eef5;
+      border-radius: 8px;
+    }
+
+    .scorecard-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .scorecard-item p {
+      margin: 0 0 10px;
+      color: #475467;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .scorecard-item em {
+      display: block;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.5;
+      font-style: normal;
+      font-weight: 650;
+    }
+
+    .role-hiring-card {
+      margin-top: 16px;
+      padding: 18px;
+      background: #ffffff;
+      border: 1px solid #e8eef5;
+      border-radius: 8px;
+    }
+
+    .role-hiring-card h3 {
+      margin: 0 0 14px;
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.3;
+    }
+
+    .role-hiring-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .role-hiring-block strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #344054;
+      font-size: 13px;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .chart-card {
+      min-height: 320px;
+      padding: 18px;
+      background: #ffffff;
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+      box-shadow: 0 8px 22px rgba(16, 24, 40, 0.05);
+    }
+
+    .chart-card h3,
+    .role-patterns h3 {
+      margin: 0 0 14px;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.3;
+    }
+
+    .chart-card canvas {
+      width: 100%;
+      max-height: 250px;
+    }
+
+    .role-patterns {
+      margin-top: 16px;
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px solid #e8eef5;
+      border-radius: 12px;
+      box-shadow: 0 8px 22px rgba(16, 24, 40, 0.05);
+    }
+
+    #framework .role-patterns {
+      display: grid;
+      gap: 16px;
+      margin-top: 0;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+    }
+
+    #framework h4 {
+      margin: 18px 0 6px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .role-pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .role-pattern-item {
+      padding: 14px;
+      background: #ffffff;
+      border: 1px solid #e8eef5;
+      border-radius: 8px;
+    }
+
+    .role-pattern-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .insight-tile {
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid #e8eef5;
+      border-radius: 8px;
+    }
+
+    .insight-tile span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.4;
+    }
+
+    .insight-tile strong {
+      display: block;
+      margin-top: 8px;
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .insight-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 22px;
+    }
+
+    .hiring-note {
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px solid #e8eef5;
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #eef6ff;
+      color: #175cd3;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .chip.green {
+      background: #ecfdf3;
+      color: #067647;
+    }
+
+    .chip.amber {
+      background: #fffaeb;
+      color: #b54708;
+    }
+
+    .app-footer {
+      margin-top: 28px;
+      padding: 18px 0 4px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .header-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+        gap: 10px;
+      }
+
+      .brand {
+        min-width: 0;
+      }
+
+      .tabs {
+        overflow-x: auto;
+      }
+
+      .confidence-badge {
+        width: fit-content;
+      }
+
+      .tab-button {
+        flex: 1 0 auto;
+      }
+
+      .page-header,
+      .dashboard-grid,
+      .insight-actions,
+      .insights-grid,
+      .scorecard-grid,
+      .chart-grid,
+      .role-pattern-grid,
+      .role-hiring-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .app-shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 10px;
+      }
+
+      .topbar {
+        top: 10px;
+        padding: 12px;
+      }
+
+      .headline,
+      .card-header,
+      .card-body {
+        padding: 18px;
+      }
+
+      .tabs {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .tab-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="People Intelligence Engine">
+        <div class="brand-mark">P</div>
+        <div>
+          <p class="brand-title">People Intelligence Engine</p>
+          <p class="brand-subtitle">Turn workforce data into actionable decisions</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <nav class="tabs" aria-label="Dashboard sections">
+          <button class="tab-button tab-btn active" type="button" onclick="openTab('framework')" aria-selected="true">Framework</button>
+          <button class="tab-button tab-btn" type="button" onclick="openTab('top-performers')" aria-selected="false">Top Performers</button>
+          <button class="tab-button tab-btn" type="button" onclick="openTab('attrition-risk')" aria-selected="false">Attrition Risk</button>
+          <button class="tab-button tab-btn" type="button" onclick="openTab('hiring-insights')" aria-selected="false">Hiring Insights</button>
+        </nav>
+        <span id="headerConfidenceBadge" class="confidence-badge">Confidence: Not analyzed</span>
+      </div>
+    </header>
+
+    <section class="page-header" aria-label="Dashboard overview">
+      <div class="headline">
+        <p class="eyebrow">People Analytics</p>
+        <h1>Turn workforce data into focused decisions.</h1>
+        <p>Upload employee data, evaluate performance signals, and surface the next people priorities from one clean dashboard.</p>
+      </div>
+
+      <aside class="metric-strip" aria-label="Summary metrics">
+        <div class="metric">
+          <span>Data readiness</span>
+          <strong>CSV</strong>
+        </div>
+        <div class="metric">
+          <span>Views available</span>
+          <strong>4</strong>
+        </div>
+        <div class="metric">
+          <span>Workflow state</span>
+          <strong>Ready</strong>
+        </div>
+      </aside>
+    </section>
+
+    <section id="framework" class="panel tab-content active" aria-labelledby="framework-title">
+      <div class="role-patterns">
+        <article class="card">
+          <div class="card-body">
+            <h2 id="framework-title" class="card-title">Model Framework &amp; Evidence</h2>
+            <p class="card-copy">This People Intelligence Engine uses a rule-based model to analyze workforce data and identify patterns in performance, attrition risk, and hiring effectiveness.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-body">
+            <h3 class="card-title">How the Model Works</h3>
+            <ul class="evidence-list">
+              <li>Identifies top performers using a composite index (TPI)</li>
+              <li>Estimates attrition risk using multiple signals (ARI)</li>
+              <li>Highlights gaps and recommends targeted interventions</li>
+              <li>Translates success patterns into hiring strategies</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-body">
+            <h3 class="card-title">Key Signals &amp; Rationale</h3>
+            <h4>Engagement</h4>
+            <p class="card-copy">Lower engagement is associated with higher attrition risk and lower productivity. Research from Gallup shows engaged employees drive stronger business outcomes and significantly lower turnover.</p>
+
+            <h4>Learning &amp; Development</h4>
+            <p class="card-copy">Learning engagement is associated with higher performance and retention. Development opportunities are a key factor in employee experience and long-term engagement.</p>
+
+            <h4>Manager Feedback</h4>
+            <p class="card-copy">Manager relationships strongly influence engagement and retention outcomes. Declines in manager engagement are linked to broader engagement drops globally.</p>
+
+            <h4>Compensation</h4>
+            <p class="card-copy">Below-market compensation is associated with higher likelihood of external job movement, especially in competitive labor markets.</p>
+
+            <h4>Tenure</h4>
+            <p class="card-copy">Early-tenure employees may show higher variability in engagement and retention depending on onboarding quality and role fit. This model treats tenure as contextual, not causal.</p>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-body">
+            <h3 class="card-title">How to Interpret Outputs</h3>
+            <ul class="evidence-list">
+              <li>"High Risk" indicates pattern-based signals, not certainty</li>
+              <li>Insights are based on relationships observed in the dataset</li>
+              <li>Outputs should guide decisions, not replace HR judgment</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-body">
+            <h3 class="card-title">Limitations</h3>
+            <ul class="evidence-list">
+              <li>Dependent on data quality and consistency</li>
+              <li>Uses rule-based logic, not predictive machine learning</li>
+              <li>Correlation does not imply causation</li>
+              <li>Small datasets may produce less reliable insights</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="top-performers" class="panel tab-content" aria-labelledby="top-performers-title">
+      <div class="dashboard-grid">
+        <article class="card">
+          <div class="card-header">
+            <h2 id="top-performers-title" class="card-title">Top Performers</h2>
+            <p class="card-copy">Upload a CSV to identify high-impact employees and team patterns.</p>
+          </div>
+          <div class="card-body">
+            <div class="upload-box">
+              <button class="secondary-action download-template-btn" type="button">Download Sample Template</button>
+              <label for="top-performers-file">Employee performance CSV</label>
+              <input id="top-performers-file" type="file" accept=".csv,text/csv" />
+            </div>
+            <button id="analyzeTopBtn" class="primary-action" type="button">Analyze Top Performers</button>
+            <div class="status-row" aria-hidden="true">
+              <span class="chip green">Performance</span>
+              <span class="chip">Compensation</span>
+              <span class="chip amber">Promotion</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card results-card">
+          <div class="card-header">
+            <h2 class="card-title">Results</h2>
+            <p class="card-copy">Insights generated from your uploaded dataset will populate this area.</p>
+          </div>
+          <div class="card-body">
+            <div id="results" class="results-placeholder">Top performer insights will appear here</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="attrition-risk" class="panel tab-content" aria-labelledby="attrition-risk-title">
+      <div class="dashboard-grid">
+        <article class="card">
+          <div class="card-header">
+            <h2 id="attrition-risk-title" class="card-title">Attrition Risk</h2>
+            <p class="card-copy">Upload a CSV to review signals that may point to retention concerns.</p>
+          </div>
+          <div class="card-body">
+            <div class="upload-box">
+              <button class="secondary-action download-template-btn" type="button">Download Sample Template</button>
+              <label for="attrition-risk-file">Employee retention CSV</label>
+              <input id="attrition-risk-file" type="file" accept=".csv,text/csv" />
+            </div>
+            <button id="analyzeAttritionBtn" class="primary-action" type="button">Analyze Attrition Risk</button>
+            <div class="status-row" aria-hidden="true">
+              <span class="chip amber">Engagement</span>
+              <span class="chip">Tenure</span>
+              <span class="chip green">Manager</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card results-card">
+          <div class="card-header">
+            <h2 class="card-title">Results</h2>
+            <p class="card-copy">Retention insights and risk summaries will populate this area.</p>
+          </div>
+          <div class="card-body">
+            <div id="attritionResults" class="results-placeholder">Attrition risk insights will appear here</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="hiring-insights" class="panel tab-content" aria-labelledby="hiring-insights-title">
+      <div class="insight-actions">
+        <article class="card">
+          <div class="card-header">
+            <h2 id="hiring-insights-title" class="card-title">Hiring Insights</h2>
+            <p class="card-copy">Generate a high-level hiring view for roles, capacity, and talent pipeline planning.</p>
+          </div>
+          <div class="card-body">
+            <div class="hiring-note">This view is ready to generate recommendations once hiring data or business priorities are connected.</div>
+            <button id="generateHiringBtn" class="primary-action" type="button">Generate Hiring Insights</button>
+            <div class="status-row" aria-hidden="true">
+              <span class="chip">Roles</span>
+              <span class="chip green">Pipeline</span>
+              <span class="chip amber">Capacity</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card results-card">
+          <div class="card-header">
+            <h2 class="card-title">Results</h2>
+            <p class="card-copy">Hiring priorities and opportunity areas will populate this area.</p>
+          </div>
+          <div class="card-body">
+            <div id="hiringResults" class="results-placeholder">Hiring insights will appear here</div>
+          </div>
+        </article>
+      </div>
+    </section>
+    <footer class="app-footer">Directional insights based on uploaded workforce data</footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const panels = document.querySelectorAll(".tab-content");
+    let analyzedEmployees = [];
+    let departmentChart = null;
+    let scoreComparisonChart = null;
+    let riskDistributionChart = null;
+    let attritionDepartmentChart = null;
+    let attritionRoleChart = null;
+
+    function openTab(tabId) {
+      const currentEvent = typeof event !== "undefined" ? event : null;
+      const clickedButton = currentEvent ? currentEvent.target : document.querySelector(`.tab-btn[onclick="openTab('${tabId}')"]`);
+
+      document.querySelectorAll(".tab-content").forEach(tab => {
+        tab.style.display = "none";
+        tab.classList.remove("active");
+      });
+
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.remove("active");
+        btn.setAttribute("aria-selected", "false");
+      });
+
+      document.getElementById(tabId).style.display = "block";
+      document.getElementById(tabId).classList.add("active");
+
+      if (clickedButton) {
+        clickedButton.classList.add("active");
+        clickedButton.setAttribute("aria-selected", "true");
+      }
+    }
+
+    function calculateTPI(e) {
+      const managerScore =
+        e.managerFeedback === "Positive" ? 1 :
+        e.managerFeedback === "Neutral" ? 0.5 : 0;
+
+      return (
+        (metricValue(e.performanceScore) / 5) * 0.3 +
+        (metricValue(e.engagementScore) / 100) * 0.2 +
+        (metricValue(e.learningScore) / 100) * 0.15 +
+        (managerScore * 0.15) +
+        (metricValue(e.punctuality) / 100) * 0.1 +
+        (metricValue(e.salaryMarketRatio) * 0.1)
+      );
+    }
+
+    function average(employees, field) {
+      if (employees.length === 0) {
+        return 0;
+      }
+
+      const validValues = employees
+        .map(employee => employee[field])
+        .filter(value => Number.isFinite(value));
+
+      if (validValues.length === 0) {
+        return 0;
+      }
+
+      return validValues.reduce((sum, value) => sum + value, 0) / validValues.length;
+    }
+
+    function toNumericValue(value) {
+      return value === "" ? NaN : Number(value);
+    }
+
+    function metricValue(value) {
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    function getDriverStrength(value) {
+      const magnitude = Math.abs(value);
+      const isRatio = magnitude <= 1;
+
+      if (isRatio ? magnitude >= 0.15 : magnitude >= 15) {
+        return "Strong Driver";
+      }
+
+      if (isRatio ? magnitude >= 0.07 : magnitude >= 7) {
+        return "Moderate Driver";
+      }
+
+      return "Weak Driver";
+    }
+
+    function getDataQuality(employees) {
+      const keyFields = ["performanceScore", "engagementScore", "learningScore", "punctuality", "salaryMarketRatio"];
+      const totalEmployees = employees.length;
+      const missingCount = employees.reduce((count, employee) => {
+        return count + keyFields.filter(field => !Number.isFinite(employee[field])).length;
+      }, 0);
+      const roleGroups = groupByField(employees, "role");
+      const largestRoleCount = Math.max(0, ...Object.values(roleGroups).map(group => group.length));
+      const unevenRoleDistribution = totalEmployees > 0 && largestRoleCount / totalEmployees > 0.7;
+      let confidenceIndex = totalEmployees < 20 ? 0 : totalEmployees <= 50 ? 1 : 2;
+
+      if (missingCount > 0 || unevenRoleDistribution) {
+        confidenceIndex = Math.max(0, confidenceIndex - 1);
+      }
+
+      return {
+        totalEmployees,
+        missingCount,
+        unevenRoleDistribution,
+        confidence: ["Low", "Medium", "High"][confidenceIndex]
+      };
+    }
+
+    function renderCredibilityPanel(employees) {
+      const quality = getDataQuality(employees);
+      const warnings = [];
+      const headerConfidenceBadge = document.getElementById("headerConfidenceBadge");
+
+      if (headerConfidenceBadge) {
+        headerConfidenceBadge.textContent = `Confidence: ${quality.confidence}`;
+      }
+
+      if (quality.missingCount > 0) {
+        warnings.push("Missing values detected in dataset");
+        warnings.push("Insights may be less reliable");
+      }
+
+      if (quality.totalEmployees < 20) {
+        warnings.push("Small dataset — insights may not be statistically reliable");
+      }
+
+      if (quality.unevenRoleDistribution) {
+        warnings.push("Role distribution is uneven, so role-level comparisons may be less stable");
+      }
+
+      return `
+        <section class="credibility-panel" aria-label="Data credibility">
+          <div><strong>Insights based on ${quality.totalEmployees} employees</strong></div>
+          <div><strong>Confidence Level:</strong> ${quality.confidence}</div>
+          ${warnings.length > 0 ? `
+            <div class="credibility-warning">
+              <div>⚠️ Data Quality Warning:</div>
+              <ul class="evidence-list">
+                ${warnings.map(warning => `<li>${escapeHtml(warning)}</li>`).join("")}
+              </ul>
+            </div>
+          ` : ""}
+        </section>
+      `;
+    }
+
+    function renderLimitationNote() {
+      return `<p class="limitation-note">These insights are directional and based on available data. They should be combined with qualitative HR judgment.</p>`;
+    }
+
+    function calculateARI(e) {
+      const managerScore =
+        e.managerFeedback === "Positive" ? 1 :
+        e.managerFeedback === "Neutral" ? 0.5 : 0;
+
+      return (
+        (1 - (metricValue(e.engagementScore) / 100)) * 0.22 +
+        (1 - (metricValue(e.performanceScore) / 5)) * 0.18 +
+        (1 - metricValue(e.salaryMarketRatio)) * 0.18 +
+        (1 - managerScore) * 0.14 +
+        (1 - (metricValue(e.learningScore) / 100)) * 0.09 +
+        (1 - (metricValue(e.punctuality) / 100)) * 0.09 +
+        (1 - normalizeTenure(e.tenureMonths)) * 0.1
+      );
+    }
+
+    function normalizeTenure(months) {
+      const tenure = metricValue(months);
+      if (tenure < 6) return 0.3;
+      if (tenure < 24) return 0.7;
+      return 1;
+    }
+
+    function getRiskLevel(ari) {
+      if (ari >= 0.6) {
+        return "High";
+      }
+
+      if (ari >= 0.3) {
+        return "Medium";
+      }
+
+      return "Low";
+    }
+
+    function getAttritionDrivers(e) {
+      const managerScore =
+        e.managerFeedback === "Positive" ? 1 :
+        e.managerFeedback === "Neutral" ? 0.5 : 0;
+      const engagementLabel = metricValue(e.tenureMonths) > 36
+        ? "Long-tenure disengagement risk"
+        : metricValue(e.tenureMonths) < 6
+          ? "Early engagement risk"
+          : "Low engagement";
+      const performanceLabel = metricValue(e.tenureMonths) < 6
+        ? "New joiner performance risk (onboarding gap)"
+        : "Low performance";
+
+      return [
+        { label: engagementLabel, value: (1 - (metricValue(e.engagementScore) / 100)) * 0.22 },
+        { label: performanceLabel, value: (1 - (metricValue(e.performanceScore) / 5)) * 0.18 },
+        { label: "Low salary", value: (1 - metricValue(e.salaryMarketRatio)) * 0.18 },
+        { label: "Negative manager feedback", value: (1 - managerScore) * 0.14 },
+        { label: "Low learning", value: (1 - (metricValue(e.learningScore) / 100)) * 0.09 },
+        { label: "Poor punctuality", value: (1 - (metricValue(e.punctuality) / 100)) * 0.09 }
+      ]
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 2)
+        .map(driver => `${driver.label} (${getDriverStrength(driver.value)})`);
+    }
+
+    function getDriverGaps(e) {
+      return [
+        { key: "engagementScore", label: "Engagement", value: 1 - (metricValue(e.engagementScore) / 100) },
+        { key: "learningScore", label: "Learning", value: 1 - (metricValue(e.learningScore) / 100) },
+        { key: "performanceScore", label: "Performance", value: 1 - (metricValue(e.performanceScore) / 5) },
+        { key: "salaryMarketRatio", label: "Salary market ratio", value: 1 - metricValue(e.salaryMarketRatio) },
+        { key: "punctuality", label: "Punctuality", value: 1 - (metricValue(e.punctuality) / 100) }
+      ].filter(driver => driver.value > 0);
+    }
+
+    function groupByField(employees, field) {
+      return employees.reduce((groups, employee) => {
+        const key = employee[field] || `Unspecified ${field}`;
+        if (!groups[key]) {
+          groups[key] = [];
+        }
+        groups[key].push(employee);
+        return groups;
+      }, {});
+    }
+
+    function summarizeAttritionGroups(employees, field) {
+      return Object.entries(groupByField(employees, field)).map(([name, group]) => {
+        const highRiskCount = group.filter(employee => employee.riskLevel === "High").length;
+
+        return {
+          name,
+          count: group.length,
+          averageAri: average(group, "ari"),
+          highRiskCount,
+          highRiskPercent: group.length > 0 ? (highRiskCount / group.length) * 100 : 0
+        };
+      });
+    }
+
+    function getRecommendedActions(employee) {
+      const actions = employee.drivers.map(driver => {
+        if (driver.includes("engagement")) {
+          return "Schedule engagement check-in";
+        }
+
+        if (driver.includes("performance")) {
+          return "Create focused coaching plan";
+        }
+
+        if (driver.includes("salary")) {
+          return "Review pay competitiveness";
+        }
+
+        if (driver.includes("manager")) {
+          return "Align manager feedback plan";
+        }
+
+        if (driver.includes("learning")) {
+          return "Offer learning support";
+        }
+
+        if (driver.includes("punctuality")) {
+          return "Clarify attendance expectations";
+        }
+
+        return "Review retention plan";
+      });
+
+      return [...new Set(actions)].slice(0, 2);
+    }
+
+    function averageByGroup(employees, riskLevel, field) {
+      const group = employees.filter(employee => employee.riskLevel === riskLevel);
+
+      if (group.length === 0) {
+        return 0;
+      }
+
+      return group.reduce((sum, employee) => sum + employee[field], 0) / group.length;
+    }
+
+    function createAttritionEvidence(employees) {
+      const totalEmployees = employees.length;
+      const highRiskCount = employees.filter(employee => employee.riskLevel === "High").length;
+      const percentageHighRisk = totalEmployees > 0 ? (highRiskCount / totalEmployees) * 100 : 0;
+      const newJoiners = employees.filter(employee => employee.tenureMonths < 6);
+      const longTenureEmployees = employees.filter(employee => employee.tenureMonths > 36);
+      const highRiskNewJoiners = newJoiners.filter(employee => employee.riskLevel === "High").length;
+      const mediumHighLongTenure = longTenureEmployees.filter(employee => employee.riskLevel === "Medium" || employee.riskLevel === "High").length;
+      const percentageHighRiskNewJoiners = newJoiners.length > 0 ? (highRiskNewJoiners / newJoiners.length) * 100 : 0;
+      const percentageMediumHighLongTenure = longTenureEmployees.length > 0 ? (mediumHighLongTenure / longTenureEmployees.length) * 100 : 0;
+      const highRiskAvgEngagement = averageByGroup(employees, "High", "engagementScore");
+      const lowRiskAvgEngagement = averageByGroup(employees, "Low", "engagementScore");
+      const highRiskAvgLearning = averageByGroup(employees, "High", "learningScore");
+      const lowRiskAvgLearning = averageByGroup(employees, "Low", "learningScore");
+      const departmentSummaries = summarizeAttritionGroups(employees, "department");
+      const roleSummaries = summarizeAttritionGroups(employees, "role");
+      const highestRiskDepartment = [...departmentSummaries].sort((a, b) => b.averageAri - a.averageAri)[0];
+      const highestRiskRole = [...roleSummaries].sort((a, b) => b.highRiskPercent - a.highRiskPercent)[0];
+      const driverCounts = {};
+
+      employees.forEach(employee => {
+        getDriverGaps(employee).forEach(driver => {
+          driverCounts[driver.label] = (driverCounts[driver.label] || 0) + 1;
+        });
+      });
+
+      const topDrivers = Object.entries(driverCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+      const engagementInsight = highRiskAvgEngagement > 0 && lowRiskAvgEngagement > 0 && highRiskAvgEngagement < lowRiskAvgEngagement
+        ? "Lower engagement is associated with higher attrition risk in this dataset"
+        : "Engagement remains an important signal to monitor";
+      const learningInsight = highRiskAvgLearning > 0 && lowRiskAvgLearning > 0 && highRiskAvgLearning < lowRiskAvgLearning
+        ? "Lower learning scores are associated with higher attrition risk in this dataset"
+        : "Learning scores should be reviewed alongside risk level";
+      const newJoinerInsight = newJoiners.length > 0 && percentageHighRiskNewJoiners >= percentageHighRisk
+        ? "New joiner status is associated with higher attrition risk in this dataset"
+        : "New joiner risk is currently manageable";
+      const longTenureInsight = longTenureEmployees.length > 0 && percentageMediumHighLongTenure > 0
+        ? "Long-tenure employees with lower engagement may need follow-up"
+        : "Long-tenure employees show limited elevated risk";
+
+      return `
+        <section class="evidence-section" aria-label="Insights and evidence">
+          <h3>Insights &amp; Evidence</h3>
+          <ul class="evidence-list">
+            <li>${percentageHighRisk.toFixed(0)}% of employees are at high attrition risk (${highRiskCount} of ${totalEmployees})</li>
+            <li>${engagementInsight}</li>
+            <li>${learningInsight}</li>
+            <li>Average engagement: High Risk ${highRiskAvgEngagement.toFixed(1)}, Low Risk ${lowRiskAvgEngagement.toFixed(1)}</li>
+            <li>Average learning score: High Risk ${highRiskAvgLearning.toFixed(1)}, Low Risk ${lowRiskAvgLearning.toFixed(1)}</li>
+            <li>${percentageHighRiskNewJoiners.toFixed(0)}% of new joiners (&lt;6 months) are High Risk</li>
+            <li>${percentageMediumHighLongTenure.toFixed(0)}% of long-tenure employees (&gt;36 months) are Medium or High Risk</li>
+            <li>${newJoinerInsight}</li>
+            <li>${longTenureInsight}</li>
+            <li>${escapeHtml(highestRiskDepartment.name)} department has the highest observed attrition risk</li>
+            <li>${escapeHtml(highestRiskRole.name)} role has the highest observed % of high-risk employees</li>
+          </ul>
+          <ol class="driver-ranking">
+            ${topDrivers.map(([driver, count]) => `<li>${escapeHtml(driver)} appeared as a gap for ${count} employee${count === 1 ? "" : "s"} (${getDriverStrength(count / totalEmployees)})</li>`).join("")}
+          </ol>
+          ${renderLimitationNote()}
+        </section>
+      `;
+    }
+
+    function createExecutiveSummary(employees) {
+      const totalEmployees = employees.length;
+      const highRiskCount = employees.filter(employee => employee.riskLevel === "High").length;
+      const percentageHighRisk = totalEmployees > 0 ? (highRiskCount / totalEmployees) * 100 : 0;
+      const departmentSummaries = summarizeAttritionGroups(employees, "department");
+      const highestRiskDepartment = [...departmentSummaries].sort((a, b) => b.averageAri - a.averageAri)[0];
+      const driverCounts = {};
+
+      employees.forEach(employee => {
+        getDriverGaps(employee).forEach(driver => {
+          driverCounts[driver.label] = (driverCounts[driver.label] || 0) + 1;
+        });
+      });
+
+      const strongestFactors = Object.entries(driverCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2)
+        .map(([driver]) => driver.toLowerCase())
+        .join(" and ");
+
+      return `
+        <section class="executive-summary" aria-label="Executive summary">
+          <h3>Executive Summary</h3>
+          <ul class="evidence-list">
+            <li>${percentageHighRisk.toFixed(0)}% of employees are at high attrition risk</li>
+            <li>${escapeHtml(highestRiskDepartment.name)} department has the highest observed concentration of risk</li>
+            <li>${escapeHtml(strongestFactors || "Engagement and learning")} are the strongest associated factors in this dataset</li>
+          </ul>
+        </section>
+      `;
+    }
+
+    function createTopPerformerRolePatterns(topPerformers) {
+      const roleGroups = {};
+
+      topPerformers.forEach(employee => {
+        const role = employee.role || "Unspecified Role";
+        if (!roleGroups[role]) {
+          roleGroups[role] = [];
+        }
+        roleGroups[role].push(employee);
+      });
+
+      return `
+        <section class="role-patterns" aria-label="Top performer patterns by role">
+          <h3>Top Performer Patterns by Role</h3>
+          <div class="role-pattern-grid">
+            ${Object.entries(roleGroups).map(([role, employees]) => `
+              <div class="role-pattern-item">
+                <strong>Role: ${escapeHtml(role)}</strong>
+                <ul class="evidence-list">
+                  <li>Avg Learning: ${average(employees, "learningScore").toFixed(1)}</li>
+                  <li>Avg Engagement: ${average(employees, "engagementScore").toFixed(1)}</li>
+                  <li>Avg Punctuality: ${average(employees, "punctuality").toFixed(1)}</li>
+                </ul>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderTopPerformerCharts(employees, topPerformers) {
+      if (departmentChart) {
+        departmentChart.destroy();
+      }
+
+      if (scoreComparisonChart) {
+        scoreComparisonChart.destroy();
+      }
+
+      if (typeof Chart === "undefined") {
+        return;
+      }
+
+      const departmentCounts = {};
+      topPerformers.forEach(employee => {
+        const department = employee.department || "Unspecified";
+        departmentCounts[department] = (departmentCounts[department] || 0) + 1;
+      });
+
+      const others = employees.filter(employee => !topPerformers.includes(employee));
+      const comparisonGroup = others.length > 0 ? others : employees;
+      const departmentCanvas = document.getElementById("topDepartmentChart");
+      const scoreCanvas = document.getElementById("scoreComparisonChart");
+
+      if (!departmentCanvas || !scoreCanvas) {
+        return;
+      }
+
+      departmentChart = new Chart(departmentCanvas, {
+        type: "bar",
+        data: {
+          labels: Object.keys(departmentCounts),
+          datasets: [{
+            label: "Top Performers",
+            data: Object.values(departmentCounts),
+            backgroundColor: "#2563eb",
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0 }
+            }
+          }
+        }
+      });
+
+      scoreComparisonChart = new Chart(scoreCanvas, {
+        type: "bar",
+        data: {
+          labels: ["Learning", "Engagement", "Performance", "Punctuality"],
+          datasets: [
+            {
+              label: "Top performers",
+              data: [
+                average(topPerformers, "learningScore"),
+                average(topPerformers, "engagementScore"),
+                average(topPerformers, "performanceScore") * 20,
+                average(topPerformers, "punctuality")
+              ],
+              backgroundColor: "#14b8a6",
+              borderRadius: 6
+            },
+            {
+              label: "Others",
+              data: [
+                average(comparisonGroup, "learningScore"),
+                average(comparisonGroup, "engagementScore"),
+                average(comparisonGroup, "performanceScore") * 20,
+                average(comparisonGroup, "punctuality")
+              ],
+              backgroundColor: "#94a3b8",
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function renderAttritionCharts(employees) {
+      if (riskDistributionChart) {
+        riskDistributionChart.destroy();
+      }
+
+      if (attritionDepartmentChart) {
+        attritionDepartmentChart.destroy();
+      }
+
+      if (attritionRoleChart) {
+        attritionRoleChart.destroy();
+      }
+
+      if (typeof Chart === "undefined") {
+        return;
+      }
+
+      const riskCanvas = document.getElementById("riskDistributionChart");
+      const departmentCanvas = document.getElementById("attritionDepartmentChart");
+      const roleCanvas = document.getElementById("attritionRoleChart");
+
+      if (!riskCanvas || !departmentCanvas || !roleCanvas) {
+        return;
+      }
+
+      const lowRiskCount = employees.filter(employee => employee.riskLevel === "Low").length;
+      const mediumRiskCount = employees.filter(employee => employee.riskLevel === "Medium").length;
+      const highRiskCount = employees.filter(employee => employee.riskLevel === "High").length;
+      const departmentSummaries = summarizeAttritionGroups(employees, "department")
+        .sort((a, b) => b.averageAri - a.averageAri);
+      const roleSummaries = summarizeAttritionGroups(employees, "role")
+        .sort((a, b) => b.highRiskPercent - a.highRiskPercent);
+
+      riskDistributionChart = new Chart(riskCanvas, {
+        type: "doughnut",
+        data: {
+          labels: ["Low Risk", "Medium Risk", "High Risk"],
+          datasets: [{
+            data: [lowRiskCount, mediumRiskCount, highRiskCount],
+            backgroundColor: ["#12b76a", "#f59e0b", "#ef4444"],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom" }
+          }
+        }
+      });
+
+      attritionDepartmentChart = new Chart(departmentCanvas, {
+        type: "bar",
+        data: {
+          labels: departmentSummaries.map(summary => summary.name),
+          datasets: [{
+            label: "Average ARI",
+            data: departmentSummaries.map(summary => Number(summary.averageAri.toFixed(3))),
+            backgroundColor: "#2563eb",
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+
+      attritionRoleChart = new Chart(roleCanvas, {
+        type: "bar",
+        data: {
+          labels: roleSummaries.map(summary => summary.name),
+          datasets: [{
+            label: "% High Risk",
+            data: roleSummaries.map(summary => Number(summary.highRiskPercent.toFixed(0))),
+            backgroundColor: "#14b8a6",
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100,
+              ticks: {
+                callback: value => `${value}%`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function getHiringDriverContent(metric) {
+      const content = {
+        learningScore: {
+          driver: "Higher learning agility is associated with stronger performance in this role",
+          recommendation: "Prioritize candidates with strong learning agility",
+          question: "Tell me about a time you had to quickly learn something new."
+        },
+        engagementScore: {
+          driver: "Higher engagement is associated with stronger performance in this role",
+          recommendation: "Look for candidates who show clear energy for this role",
+          question: "What kind of work keeps you most engaged over time?"
+        },
+        performanceScore: {
+          driver: "Execution quality is associated with stronger outcomes in this role",
+          recommendation: "Assess examples of consistent delivery and role outcomes",
+          question: "Tell me about a goal where your performance clearly exceeded expectations."
+        },
+        punctuality: {
+          driver: "Higher punctuality is associated with stronger performance in this role",
+          recommendation: "Look for consistent discipline and punctuality",
+          question: "Tell me about a time you owned a commitment that required consistent follow-through."
+        },
+        managerFeedback: {
+          driver: "Positive manager alignment is associated with stronger performance in this role",
+          recommendation: "Assess manager compatibility during interviews",
+          question: "Describe the manager relationship that helped you do your best work."
+        }
+      };
+
+      return content[metric];
+    }
+
+    function buildRoleHiringInsights(employees) {
+      return Object.entries(groupByField(employees, "role"))
+        .filter(([, roleEmployees]) => roleEmployees.length >= 3)
+        .map(([role, roleEmployees]) => {
+          const rankedEmployees = roleEmployees
+            .map(employee => ({
+              ...employee,
+              tpi: calculateTPI(employee)
+            }))
+            .sort((a, b) => b.tpi - a.tpi);
+          const topCount = Math.max(1, Math.ceil(rankedEmployees.length * 0.2));
+          const topPerformers = rankedEmployees.slice(0, topCount);
+          const rest = rankedEmployees.slice(topCount);
+
+          if (rest.length === 0) {
+            return null;
+          }
+
+          const topPositiveFeedbackPercent = topPerformers.filter(employee => employee.managerFeedback === "Positive").length / topPerformers.length * 100;
+          const restPositiveFeedbackPercent = rest.filter(employee => employee.managerFeedback === "Positive").length / rest.length * 100;
+          const differences = [
+            {
+              metric: "learningScore",
+              value: average(topPerformers, "learningScore") - average(rest, "learningScore")
+            },
+            {
+              metric: "engagementScore",
+              value: average(topPerformers, "engagementScore") - average(rest, "engagementScore")
+            },
+            {
+              metric: "performanceScore",
+              value: (average(topPerformers, "performanceScore") - average(rest, "performanceScore")) * 20
+            },
+            {
+              metric: "punctuality",
+              value: average(topPerformers, "punctuality") - average(rest, "punctuality")
+            },
+            {
+              metric: "managerFeedback",
+              value: topPositiveFeedbackPercent - restPositiveFeedbackPercent
+            }
+          ]
+            .filter(driver => driver.value > 0)
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 3);
+
+          const selectedDrivers = differences.length > 0
+            ? differences
+            : [{ metric: "learningScore", value: 0 }, { metric: "engagementScore", value: 0 }];
+
+          return {
+            role,
+            drivers: selectedDrivers.map(driver => ({
+              ...getHiringDriverContent(driver.metric),
+              difference: driver.value,
+              strength: getDriverStrength(driver.value)
+            }))
+          };
+        })
+        .filter(Boolean);
+    }
+
+    function renderHiringInsights(employees) {
+      if (employees.length === 0) {
+        document.getElementById("hiringResults").className = "results-placeholder";
+        document.getElementById("hiringResults").textContent = "Please upload and analyze data first";
+        return;
+      }
+
+      const roleInsights = buildRoleHiringInsights(employees);
+
+      if (roleInsights.length === 0) {
+        document.getElementById("hiringResults").className = "results-placeholder";
+        document.getElementById("hiringResults").textContent = "Please analyze a dataset with at least 3 employees in a role";
+        return;
+      }
+
+      document.getElementById("hiringResults").className = "";
+      document.getElementById("hiringResults").innerHTML = `
+        ${renderCredibilityPanel(employees)}
+        ${roleInsights.map(roleInsight => `
+          <section class="role-hiring-card" aria-label="Hiring insights for ${escapeHtml(roleInsight.role)}">
+            <h3>${escapeHtml(roleInsight.role)}</h3>
+            <div class="role-hiring-grid">
+              <div class="role-hiring-block">
+                <strong>Success Drivers</strong>
+                <ul class="evidence-list">
+                  ${roleInsight.drivers.map(driver => `<li>${escapeHtml(driver.driver)} (${driver.strength})</li>`).join("")}
+                </ul>
+              </div>
+              <div class="role-hiring-block">
+                <strong>Hiring Recommendations</strong>
+                <ul class="evidence-list">
+                  ${roleInsight.drivers.map(driver => `<li>${escapeHtml(driver.recommendation)}</li>`).join("")}
+                </ul>
+              </div>
+              <div class="role-hiring-block">
+                <strong>Interview Questions</strong>
+                <ul class="evidence-list">
+                  ${roleInsight.drivers.map(driver => `<li>${escapeHtml(driver.question)}</li>`).join("")}
+                </ul>
+              </div>
+            </div>
+          </section>
+        `).join("")}
+        ${renderLimitationNote()}
+      `;
+    }
+
+    function parseEmployeeCsv(text) {
+      const expectedColumns = [
+        "name",
+        "role",
+        "department",
+        "tenureMonths",
+        "performanceScore",
+        "engagementScore",
+        "learningScore",
+        "punctuality",
+        "salaryMarketRatio",
+        "managerFeedback"
+      ];
+      const rows = text.split("\n").map(r => r.trim()).filter(r => r);
+      const headers = rows[0].split(",").map(header => header.trim());
+      const hasExpectedColumns = expectedColumns.length === headers.length &&
+        expectedColumns.every((column, index) => headers[index] === column);
+
+      if (!hasExpectedColumns || rows.length < 2) {
+        throw new Error("Invalid employee CSV");
+      }
+
+      return rows.slice(1).map(row => {
+        const values = row.split(",");
+        let obj = {};
+        headers.forEach((h, i) => {
+          obj[h] = values[i] ? values[i].trim() : "";
+        });
+        return {
+          ...obj,
+          tenureMonths: toNumericValue(obj.tenureMonths),
+          performanceScore: toNumericValue(obj.performanceScore),
+          engagementScore: toNumericValue(obj.engagementScore),
+          learningScore: toNumericValue(obj.learningScore),
+          punctuality: toNumericValue(obj.punctuality),
+          salaryMarketRatio: toNumericValue(obj.salaryMarketRatio)
+        };
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function downloadSampleTemplate() {
+      const csvContent = [
+        "name,role,department,tenureMonths,performanceScore,engagementScore,learningScore,punctuality,salaryMarketRatio,managerFeedback",
+        "Arjun,Sales Executive,Sales,12,4,80,70,90,1,Positive",
+        "Ravi,Support Associate,Customer Success,4,2,40,30,60,0.8,Negative"
+      ].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "hr_template.csv";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    document.querySelectorAll(".download-template-btn").forEach(button => {
+      button.addEventListener("click", downloadSampleTemplate);
+    });
+
+    document.getElementById("analyzeTopBtn").addEventListener("click", function () {
+      console.log("Button clicked");
+
+      const fileInput = document.querySelector('input[type="file"]');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("Please upload a CSV file");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        console.log("File loaded");
+
+        const text = e.target.result;
+        const rows = text.split("\n").map(r => r.trim()).filter(r => r);
+
+        const headers = rows[0].split(",");
+
+        const data = rows.slice(1).map(row => {
+          const values = row.split(",");
+          let obj = {};
+          headers.forEach((h, i) => {
+            obj[h.trim()] = values[i] ? values[i].trim() : "";
+          });
+          return obj;
+        });
+
+        console.log("Parsed Data:", data);
+
+        const employees = data.map(employee => {
+          const scoredEmployee = {
+            ...employee,
+            tenureMonths: toNumericValue(employee.tenureMonths),
+            performanceScore: toNumericValue(employee.performanceScore),
+            engagementScore: toNumericValue(employee.engagementScore),
+            learningScore: toNumericValue(employee.learningScore),
+            punctuality: toNumericValue(employee.punctuality),
+            salaryMarketRatio: toNumericValue(employee.salaryMarketRatio)
+          };
+
+          scoredEmployee.tpi = calculateTPI(scoredEmployee);
+          return scoredEmployee;
+        }).sort((a, b) => b.tpi - a.tpi);
+        analyzedEmployees = employees;
+
+        const topCount = Math.max(1, Math.ceil(employees.length * 0.2));
+        const topPerformers = employees.slice(0, topCount);
+        const averageLearningScore = topPerformers.reduce((sum, employee) => {
+          return sum + employee.learningScore;
+        }, 0) / topPerformers.length;
+        const positiveFeedbackPercent = topPerformers.filter(employee => {
+          return employee.managerFeedback === "Positive";
+        }).length / topPerformers.length * 100;
+
+        const tableRows = employees.map((employee, index) => {
+          const isTopPerformer = index < topCount;
+
+          return `
+            <tr class="${isTopPerformer ? "top-employee" : ""}">
+              <td>
+                <div class="employee-cell">
+                  <span>${escapeHtml(employee.name)}</span>
+                  ${isTopPerformer ? '<span class="top-badge">Top Performer</span>' : ""}
+                </div>
+              </td>
+              <td>${escapeHtml(employee.role || "Unspecified")}</td>
+              <td>${escapeHtml(employee.department || "Unspecified")}</td>
+              <td>${employee.tpi.toFixed(3)}</td>
+            </tr>
+          `;
+        }).join("");
+
+        document.getElementById("results").className = "";
+        document.getElementById("results").innerHTML = `
+          ${renderCredibilityPanel(employees)}
+          <div class="results-table-wrap">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Department</th>
+                  <th>TPI Score</th>
+                </tr>
+              </thead>
+              <tbody>${tableRows}</tbody>
+            </table>
+          </div>
+          <div class="chart-grid" aria-label="Top performer charts">
+            <section class="chart-card">
+              <h3>Top Performers by Department</h3>
+              <canvas id="topDepartmentChart"></canvas>
+            </section>
+            <section class="chart-card">
+              <h3>Average Scores: Top vs Others</h3>
+              <canvas id="scoreComparisonChart"></canvas>
+            </section>
+          </div>
+          <div class="insights-grid" aria-label="Top performer insights">
+            <div class="insight-tile">
+              <span>Average learning score of top performers</span>
+              <strong>${averageLearningScore.toFixed(1)}</strong>
+            </div>
+            <div class="insight-tile">
+              <span>Top performers with Positive manager feedback</span>
+              <strong>${positiveFeedbackPercent.toFixed(0)}%</strong>
+            </div>
+          </div>
+          ${createTopPerformerRolePatterns(topPerformers)}
+          ${renderLimitationNote()}
+        `;
+        renderTopPerformerCharts(employees, topPerformers);
+      };
+
+      reader.readAsText(file);
+    });
+
+    document.getElementById("analyzeAttritionBtn").addEventListener("click", function () {
+      const fileInput = document.getElementById("attrition-risk-file");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("Please upload a CSV file");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        try {
+          const employees = parseEmployeeCsv(e.target.result)
+            .map(employee => {
+              const ari = calculateARI(employee);
+              return {
+                ...employee,
+                ari,
+                riskLevel: getRiskLevel(ari),
+                drivers: getAttritionDrivers(employee)
+              };
+            })
+            .sort((a, b) => b.ari - a.ari);
+          analyzedEmployees = employees;
+
+          const tableRows = employees.map(employee => {
+            const riskClass = employee.riskLevel.toLowerCase();
+            const recommendedActions = getRecommendedActions(employee);
+
+            return `
+              <tr>
+                <td>
+                  <div class="employee-cell">
+                    <span>${escapeHtml(employee.name)}</span>
+                  </div>
+                </td>
+                <td>${escapeHtml(employee.role || "Unspecified")}</td>
+                <td>${escapeHtml(employee.department || "Unspecified")}</td>
+                <td><span class="risk-badge risk-${riskClass}">${employee.riskLevel}</span></td>
+                <td>${employee.ari.toFixed(3)}</td>
+                <td class="driver-list">${employee.drivers.map(escapeHtml).join(", ")}</td>
+                <td class="driver-list">${recommendedActions.map(escapeHtml).join(", ")}</td>
+              </tr>
+            `;
+          }).join("");
+
+          document.getElementById("attritionResults").className = "";
+          document.getElementById("attritionResults").innerHTML = `
+            ${renderCredibilityPanel(employees)}
+            ${createExecutiveSummary(employees)}
+            <div class="chart-grid" aria-label="Attrition leadership charts">
+              <section class="chart-card">
+                <h3>Risk Distribution</h3>
+                <canvas id="riskDistributionChart"></canvas>
+              </section>
+              <section class="chart-card">
+                <h3>Attrition Risk by Department</h3>
+                <canvas id="attritionDepartmentChart"></canvas>
+              </section>
+              <section class="chart-card">
+                <h3>High Risk by Role</h3>
+                <canvas id="attritionRoleChart"></canvas>
+              </section>
+            </div>
+            <div class="results-table-wrap">
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Risk Level</th>
+                    <th>ARI Score</th>
+                    <th>Top Drivers</th>
+                    <th>Recommended Actions</th>
+                  </tr>
+                </thead>
+                <tbody>${tableRows}</tbody>
+              </table>
+            </div>
+            ${createAttritionEvidence(employees)}
+          `;
+          renderAttritionCharts(employees);
+        } catch (error) {
+          alert("Error reading file");
+        }
+      };
+
+      reader.onerror = function() {
+        alert("Error reading file");
+      };
+
+      reader.readAsText(file);
+    });
+
+    document.getElementById("generateHiringBtn").addEventListener("click", function () {
+      renderHiringInsights(analyzedEmployees);
+    });
+  </script>
+</body>
+</html>
