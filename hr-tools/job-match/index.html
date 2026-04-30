@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Job Match Engine</title>
+
   <style>
     * {
       box-sizing: border-box;
@@ -74,9 +75,6 @@
       border-radius: 10px;
       padding: 0 14px;
       font-size: 15px;
-      color: #172033;
-      background: #ffffff;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     input:focus {
@@ -85,16 +83,96 @@
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
     }
 
-    input::placeholder {
-      color: #97a1b2;
-    }
-
     button {
       width: 100%;
       min-height: 50px;
-      border: 0;
+      border: none;
       border-radius: 10px;
       background: #2563eb;
       color: #ffffff;
       font-size: 16px;
       font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #1e4fd6;
+    }
+
+    .success-message {
+      display: none;
+      margin-top: 16px;
+      color: green;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <header>
+      <h1>AI Job Match Engine</h1>
+      <p class="subtitle">
+        Get relevant job opportunities without searching across multiple platforms.
+      </p>
+    </header>
+
+    <div class="form-card">
+
+      <form onsubmit="handleSubmit(event)">
+
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" required>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" required>
+        </div>
+
+        <div class="form-group">
+          <label>Desired Role</label>
+          <input type="text" required>
+        </div>
+
+        <div class="form-group">
+          <label>Experience (years)</label>
+          <input type="number" required>
+        </div>
+
+        <div class="form-group">
+          <label>Preferred Location</label>
+          <input type="text" required>
+        </div>
+
+        <div class="form-group">
+          <label>Resume Link (optional)</label>
+          <input type="text" placeholder="Paste Google Drive link">
+        </div>
+
+        <button type="submit">Find My Jobs</button>
+
+        <div class="success-message" id="successMsg">
+          Details submitted successfully!
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <script>
+    function handleSubmit(event) {
+      event.preventDefault();
+      document.getElementById("successMsg").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
