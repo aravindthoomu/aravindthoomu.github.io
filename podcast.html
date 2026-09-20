@@ -1,226 +1,599 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-PFS7TNZGML"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-PFS7TNZGML');
-</script>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Podcast - Aravind Speaks</title>
-<style>
-  body {
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PFS7TNZGML"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'G-PFS7TNZGML');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Podcast - Aravind Speaks</title>
+
+  <meta
+    name="description"
+    content="Listen to Aravind Speaks — conversations, stories, career lessons, optimism, book reviews and more."
+  >
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #f9f9f5;
       color: #2e3d29;
       line-height: 1.6;
-  }
-  header {
+    }
+
+    header {
       text-align: center;
       padding: 40px 20px;
       background-color: white;
       box-shadow: 0 4px 15px rgba(80, 145, 60, 0.15);
-  }
-  header h1 {
+    }
+
+    header h1 {
       font-size: 2.5rem;
       color: #3a5a40;
       letter-spacing: 1.2px;
       margin: 0 0 10px 0;
       text-shadow: 1px 1px 3px rgba(90, 120, 70, 0.3);
-  }
-  header p {
+    }
+
+    header p {
       color: #577a4a;
       font-weight: 500;
       font-size: 1.1rem;
-  }
-  main.container {
+      margin: 0;
+    }
+
+    .podcast-links {
+      margin-top: 20px;
+    }
+
+    .podcast-links a {
+      display: inline-block;
+      margin: 5px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      background-color: #3a5a40;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+    }
+
+    .podcast-links a:hover {
+      background-color: #2d4630;
+    }
+
+    main.container {
       max-width: 1100px;
-      margin: 20px auto;
+      margin: 30px auto;
       padding: 0 20px 40px 20px;
+
       display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+      );
+
       gap: 20px;
-  }
-  .episode-card {
+    }
+
+    .episode-card {
       background: white;
       border-radius: 16px;
       box-shadow: 0 6px 20px rgba(70, 140, 60, 0.12);
       overflow: hidden;
+
       display: flex;
       flex-direction: column;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: default;
-  }
-  .episode-card:hover {
+
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+
+    .episode-card:hover {
       box-shadow: 0 10px 25px rgba(80, 160, 70, 0.3);
       transform: translateY(-6px);
-  }
-  .episode-image {
+    }
+
+    .episode-image {
       width: 100%;
-      aspect-ratio: 1/1;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
       background-color: #dde6d0;
-  }
-  .episode-content {
+      display: block;
+    }
+
+    .episode-content {
       flex: 1;
       padding: 20px;
+
       display: flex;
       flex-direction: column;
+
       color: #3a533a;
-  }
-  .episode-content h3 {
+    }
+
+    .episode-content h3 {
       margin: 0 0 10px 0;
       font-size: 1.25rem;
+      line-height: 1.4;
       color: #2d4630;
       user-select: text;
-  }
-  .episode-content .date {
+    }
+
+    .episode-content .date {
       font-size: 0.9rem;
       color: #6b7a55;
       margin-bottom: 10px;
       font-weight: 600;
-  }
-  .episode-content .desc {
+    }
+
+    .episode-content .desc {
       flex: 1;
       font-size: 1rem;
       color: #576845;
       margin-bottom: 15px;
       user-select: text;
-  }
-  .episode-content audio {
+    }
+
+    .episode-content audio {
       width: 100%;
       outline-offset: 3px;
       outline-color: #7ebd59;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(126, 189, 89, 0.3);
       cursor: pointer;
-  }
-  @media (max-width: 600px) {
+    }
+
+    .episode-actions {
+      margin-top: 12px;
+    }
+
+    .episode-actions a {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background-color: #eef5e9;
+      color: #3a5a40;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .episode-actions a:hover {
+      background-color: #ddebd4;
+    }
+
+    .loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: #577a4a;
+      font-size: 1.1rem;
+    }
+
+    .error {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: #b44a4a;
+    }
+
+    .error strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 30px 15px;
+      }
+
       header h1 {
-          font-size: 1.9rem;
+        font-size: 1.9rem;
       }
+
+      header p {
+        font-size: 1rem;
+      }
+
       main.container {
-          grid-template-columns: 1fr;
-          padding: 0 10px 30px 10px;
+        grid-template-columns: 1fr;
+        padding: 0 10px 30px 10px;
       }
-  }
-</style>
+
+      .episode-content {
+        padding: 16px;
+      }
+
+    }
+
+  </style>
+
 </head>
+
 <body>
 
 <header>
+
   <h1>Aravind Speaks Podcast</h1>
-  <p>Listen to the latest episodes below</p>
+
+  <p>
+    Listen to the latest episodes below
+  </p>
+
+  <div class="podcast-links">
+
+    <a
+      href="https://podcasters.spotify.com/pod/show/aravindspeaks"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      🎧 Listen on Spotify
+    </a>
+
+  </div>
+
 </header>
 
+
 <main class="container" id="episodes">
-  <!-- Episodes will be injected here -->
+
+  <div class="loading">
+    Loading podcast episodes...
+  </div>
+
 </main>
 
+
 <script>
-  const rssURL = "https://anchor.fm/s/4a4bdd28/podcast/rss";
-  const proxyURL = "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(rssURL);
 
-  // Function to format date nicely
-  const formatDate = (str) => {
-    const d = new Date(str);
-    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-  };
+  /*
+   * Podcast data is loaded from our own GitHub Pages website.
+   *
+   * There is NO external CORS proxy here.
+   *
+   * episodes.json should contain the podcast episode data.
+   */
 
-  fetch(proxyURL)
-    .then(res => res.text())
-    .then(str => {
-      const parser = new DOMParser();
-      const xml = parser.parseFromString(str, "application/xml");
-      const items = xml.querySelectorAll("item");
-      const container = document.getElementById("episodes");
+  const EPISODES_URL = "./episodes.json";
 
-      if (!items || items.length === 0) throw new Error("No episodes found");
+  const container = document.getElementById("episodes");
 
-      // To handle single playback
-      let currentAudio = null;
 
-      items.forEach((item, index) => {
-        const title = item.querySelector("title")?.textContent || "Untitled Episode";
-        const pubDate = item.querySelector("pubDate")?.textContent || "";
-        const desc = item.querySelector("description")?.textContent || "";
-        const enclosure = item.querySelector("enclosure");
-        const audioUrl = enclosure ? enclosure.getAttribute("url") : null;
+  /*
+   * Format podcast publication date
+   */
+  function formatDate(dateString) {
 
-        // Image - try multiple sources
-        let imgUrl = "";
-        const itunesImage = item.getElementsByTagName("itunes:image")[0];
-        const imageTag = xml.querySelector("image url");
-        if (itunesImage) {
-          imgUrl = itunesImage.getAttribute("href");
-        } else if (imageTag) {
-          imgUrl = imageTag.textContent;
-        } else {
-          // Try to extract image URL from description content
-          const imgMatch = desc.match(/<img[^>]+src="([^">]+)"/i);
-          if (imgMatch) imgUrl = imgMatch[1];
-        }
-        if (!imgUrl) imgUrl = "https://via.placeholder.com/400x400/7ebd59/ffffff?text=Podcast";
+    if (!dateString) {
+      return "";
+    }
 
-        // Create card div
-        const card = document.createElement("div");
-        card.className = "episode-card";
+    const date = new Date(dateString);
 
-        const imgEl = document.createElement("img");
-        imgEl.className = "episode-image";
-        imgEl.src = imgUrl;
-        imgEl.alt = title;
+    if (isNaN(date.getTime())) {
+      return "";
+    }
 
-        const content = document.createElement("div");
-        content.className = "episode-content";
-
-        const h3 = document.createElement("h3");
-        h3.textContent = title;
-
-        const dateDiv = document.createElement("div");
-        dateDiv.className = "date";
-        dateDiv.textContent = formatDate(pubDate);
-
-        const descDiv = document.createElement("div");
-        descDiv.className = "desc";
-        descDiv.textContent = desc.length > 140 ? desc.slice(0, 137) + "..." : desc;
-
-        content.appendChild(h3);
-        content.appendChild(dateDiv);
-        content.appendChild(descDiv);
-
-        if(audioUrl) {
-          const audioEl = document.createElement("audio");
-          audioEl.controls = true;
-          audioEl.src = audioUrl;
-
-          // Pause currently playing audio when new audio plays
-          audioEl.addEventListener("play", () => {
-            if(currentAudio && currentAudio !== audioEl) {
-              currentAudio.pause();
-            }
-            currentAudio = audioEl;
-          });
-
-          content.appendChild(audioEl);
-        }
-
-        card.appendChild(imgEl);
-        card.appendChild(content);
-        container.appendChild(card);
-      });
-    })
-    .catch(err => {
-      const container = document.getElementById("episodes");
-      container.innerHTML = `<p style="color:#ff6666; text-align:center; margin-top:50px;">Unable to load podcast episodes. Please try again later.</p>`;
-      console.error("RSS fetch or parse error", err);
+    return date.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
     });
+
+  }
+
+
+  /*
+   * Clean HTML from podcast descriptions.
+   */
+  function cleanDescription(description) {
+
+    if (!description) {
+      return "";
+    }
+
+    const temp = document.createElement("div");
+
+    temp.innerHTML = description;
+
+    return (
+      temp.textContent ||
+      temp.innerText ||
+      ""
+    )
+      .replace(/\s+/g, " ")
+      .trim();
+
+  }
+
+
+  /*
+   * Create one podcast episode card.
+   */
+  function createEpisodeCard(episode) {
+
+    const card = document.createElement("div");
+
+    card.className = "episode-card";
+
+
+    /*
+     * Episode image
+     */
+    const img = document.createElement("img");
+
+    img.className = "episode-image";
+
+    img.src =
+      episode.image ||
+      "https://via.placeholder.com/400x400/7ebd59/ffffff?text=Aravind+Speaks";
+
+    img.alt = episode.title || "Aravind Speaks Podcast";
+
+    img.loading = "lazy";
+
+    img.onerror = function () {
+
+      this.src =
+        "https://via.placeholder.com/400x400/7ebd59/ffffff?text=Aravind+Speaks";
+
+    };
+
+
+    /*
+     * Content wrapper
+     */
+    const content = document.createElement("div");
+
+    content.className = "episode-content";
+
+
+    /*
+     * Title
+     */
+    const title = document.createElement("h3");
+
+    title.textContent =
+      episode.title ||
+      "Untitled Episode";
+
+
+    /*
+     * Date
+     */
+    const date = document.createElement("div");
+
+    date.className = "date";
+
+    date.textContent =
+      formatDate(episode.pubDate);
+
+
+    /*
+     * Description
+     */
+    const description = document.createElement("div");
+
+    description.className = "desc";
+
+    const cleanText =
+      cleanDescription(
+        episode.description
+      );
+
+    description.textContent =
+      cleanText.length > 180
+        ? cleanText.substring(0, 177) + "..."
+        : cleanText;
+
+
+    /*
+     * Audio player
+     */
+    if (episode.audioUrl) {
+
+      const audio = document.createElement("audio");
+
+      audio.controls = true;
+
+      audio.preload = "none";
+
+      audio.src = episode.audioUrl;
+
+
+      /*
+       * Only allow one episode
+       * to play at a time.
+       */
+      audio.addEventListener(
+        "play",
+        function () {
+
+          document
+            .querySelectorAll("audio")
+            .forEach(function (otherAudio) {
+
+              if (otherAudio !== audio) {
+                otherAudio.pause();
+              }
+
+            });
+
+        }
+      );
+
+
+      content.appendChild(title);
+      content.appendChild(date);
+      content.appendChild(description);
+      content.appendChild(audio);
+
+    } else {
+
+      content.appendChild(title);
+      content.appendChild(date);
+      content.appendChild(description);
+
+    }
+
+
+    /*
+     * Spotify episode link
+     */
+    if (episode.link) {
+
+      const actions =
+        document.createElement("div");
+
+      actions.className =
+        "episode-actions";
+
+
+      const link =
+        document.createElement("a");
+
+      link.href = episode.link;
+
+      link.target = "_blank";
+
+      link.rel = "noopener noreferrer";
+
+      link.textContent =
+        "View episode on Spotify";
+
+
+      actions.appendChild(link);
+
+      content.appendChild(actions);
+
+    }
+
+
+    card.appendChild(img);
+
+    card.appendChild(content);
+
+    return card;
+
+  }
+
+
+  /*
+   * Load episodes.json
+   */
+  async function loadEpisodes() {
+
+    try {
+
+      const response =
+        await fetch(
+          EPISODES_URL + "?v=" + Date.now()
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Unable to load episodes.json"
+        );
+
+      }
+
+
+      const episodes =
+        await response.json();
+
+
+      if (
+        !Array.isArray(episodes) ||
+        episodes.length === 0
+      ) {
+
+        throw new Error(
+          "No podcast episodes found"
+        );
+
+      }
+
+
+      /*
+       * Clear loading message.
+       */
+      container.innerHTML = "";
+
+
+      /*
+       * Render episodes.
+       */
+      episodes.forEach(
+        function (episode) {
+
+          const card =
+            createEpisodeCard(
+              episode
+            );
+
+          container.appendChild(card);
+
+        }
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Podcast loading error:",
+        error
+      );
+
+
+      container.innerHTML = `
+
+        <div class="error">
+
+          <strong>
+            Unable to load podcast episodes.
+          </strong>
+
+          Please try again later.
+
+        </div>
+
+      `;
+
+    }
+
+  }
+
+
+  /*
+   * Start loading the podcast.
+   */
+  loadEpisodes();
+
 </script>
 
 </body>
